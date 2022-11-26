@@ -81,6 +81,10 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 					log.Debugw("skipping disabled worker", "worker", windowRequest.Worker)
 					continue
 				}
+				ws := sh.Workers
+				for id, handle := range ws {
+					log.Debugw(id.String(), handle.Info.Hostname)
+				}
 				if task.TaskType != sealtasks.TTFetch && !WorkerHasLayoutAccess(task, windowRequest) {
 					continue
 				}
