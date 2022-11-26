@@ -110,9 +110,10 @@ func readLayoutConfig() (*layoutConfig, error) {
 	return cfg, nil
 }
 
-func WorkerHasLayoutAccess(task *WorkerRequest, wnd *SchedWindowRequest) bool {
+func WorkerHasLayoutAccess(task *WorkerRequest, wnd *SchedWindowRequest, m *schedWorker) bool {
 	selectedTaskSectorID := task.Sector.ID.Number.String()
 	selectedWorkerID := wnd.Worker.String()
+	logLayout.Infof(m.worker.Info.Hostname)
 
 	// Load Config layout
 	conf, err := readLayoutConfig()
@@ -131,7 +132,9 @@ func WorkerHasLayoutAccess(task *WorkerRequest, wnd *SchedWindowRequest) bool {
 	// wgi = work group index
 	// sConfig = Sector Config
 	_, wgi := getWorkerGroup(conf, selectedWorkerID)
+
 	sConfig, sgi := getSectorGroup(conf, selectedTaskSectorID)
+	logLayout.Info(selectedWorkerID, selectedTaskSectorID)
 
 	// Sector config not defined
 	if sgi == -1 {
