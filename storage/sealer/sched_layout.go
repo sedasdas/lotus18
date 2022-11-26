@@ -61,6 +61,10 @@ type layoutSector struct {
 var cfg *layoutConfig
 var lastConfigUpdate time.Time
 
+func getWorkerList() {
+
+}
+
 // readLayoutConfig Read layout config from json file
 func readLayoutConfig() (*layoutConfig, error) {
 	// error interface

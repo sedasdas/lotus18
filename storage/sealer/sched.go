@@ -246,6 +246,7 @@ type SchedDiagInfo struct {
 }
 
 func (sh *Scheduler) runSched() {
+
 	defer close(sh.closed)
 
 	iw := time.After(InitWait)

@@ -138,7 +138,6 @@ func New(ctx context.Context, lstor *paths.Local, stor paths.Store, ls paths.Loc
 	}
 
 	m.setupWorkTracker()
-
 	go m.sched.runSched()
 
 	localTasks := []sealtasks.TaskType{
