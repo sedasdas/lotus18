@@ -2,7 +2,7 @@ package sealer
 
 import (
 	"context"
-	"github.com/filecoin-project/lotus/storage/sealer/sealtasks"
+
 	"math/rand"
 	"sort"
 	"sync"
@@ -92,10 +92,7 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 				if !windows[wnd].Allocated.CanHandleRequest(task.SealTask(), needRes, windowRequest.Worker, "schedAcceptable", worker.Info) {
 					continue
 				}
-				if task.TaskType == sealtasks.TTPreCommit1 || task.TaskType == sealtasks.TTPreCommit2 || task.TaskType == sealtasks.TTCommit1 {
-					log.Debug(task.TaskType)
-					continue
-				}
+
 				rpcCtx, cancel := context.WithTimeout(task.Ctx, SelectorTimeout)
 
 				ok, preferred, err := task.Sel.Ok(rpcCtx, task.TaskType, task.Sector.ProofType, worker)
