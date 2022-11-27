@@ -48,7 +48,6 @@ type WorkerSelector interface {
 	Ok(ctx context.Context, task sealtasks.TaskType, spt abi.RegisteredSealProof, a *WorkerHandle) (ok, preferred bool, err error)
 	//FindDataWoker(ctx context.Context, task sealtasks.TaskType, sid abi.SectorID, spt abi.RegisteredSealProof, a *WorkerHandle) bool
 	Cmp(ctx context.Context, task sealtasks.TaskType, a, b *WorkerHandle) (bool, error)
-	FindDataWoker(ctx context.Context, task sealtasks.TaskType, sid abi.SectorID, spt abi.RegisteredSealProof, a *WorkerHandle) bool
 }
 
 type Scheduler struct {
