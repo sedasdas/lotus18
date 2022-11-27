@@ -2,6 +2,7 @@ package sealer
 
 import (
 	"context"
+	"github.com/filecoin-project/lotus/storage/sealer/sealtasks"
 	"math/rand"
 	"sort"
 	"sync"
@@ -80,10 +81,8 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 					log.Debugw("skipping disabled worker", "worker", windowRequest.Worker)
 					continue
 				}
-				ws := sh.Workers
-				for id, handle := range ws {
-					log.Debugw(id.String(), handle.Info.Hostname)
-				}
+				//ws := sh.Workers
+
 				//if task.TaskType != sealtasks.TTFetch && !WorkerHasLayoutAccess(task, windowRequest) {
 				//	continue
 				//}
@@ -93,8 +92,11 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 				if !windows[wnd].Allocated.CanHandleRequest(task.SealTask(), needRes, windowRequest.Worker, "schedAcceptable", worker.Info) {
 					continue
 				}
-
+				if task.TaskType == sealtasks.TTPreCommit1 || task.TaskType == sealtasks.TTPreCommit2 || task.TaskType == sealtasks.TTCommit1 {
+					continue
+				}
 				rpcCtx, cancel := context.WithTimeout(task.Ctx, SelectorTimeout)
+
 				ok, preferred, err := task.Sel.Ok(rpcCtx, task.TaskType, task.Sector.ProofType, worker)
 				cancel()
 				if err != nil {

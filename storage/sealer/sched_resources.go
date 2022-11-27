@@ -83,8 +83,10 @@ func (a *ActiveResources) Free(tt sealtasks.SealTaskType, wr storiface.WorkerRes
 // CanHandleRequest evaluates if the worker has enough available resources to
 // handle the request.
 func (a *ActiveResources) CanHandleRequest(tt sealtasks.SealTaskType, needRes storiface.Resources, wid storiface.WorkerID, caller string, info storiface.WorkerInfo) bool {
+
 	for taskType, i := range a.taskCounters {
 		log.Debugf(taskType.String(), i)
+		log.Debug(tt)
 	}
 
 	//log.Debugf(info.Hostname + "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss")
