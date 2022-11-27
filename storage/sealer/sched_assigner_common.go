@@ -91,14 +91,17 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 				//	log.Debug(task.TaskType)
 				//	continue
 				//}
-				if task.TaskType != sealtasks.TTFetch {
-					continue
-
-				}
-
-				//if task.TaskType != sealtasks.TTFetch && !WorkerHasLayoutAccess(task, windowRequest) {
+				//if task.TaskType != sealtasks.TTFetch {
+				//	if isExist := task.Sel.FindDataWoker(task.Ctx, task.TaskType, task.Sector.ID, task.Sector.ProofType, worker); !isExist {
+				//		continue
+				//	}
 				//	continue
+
 				//}
+				//SchedLocal(task,windowRequest)
+				if task.TaskType != sealtasks.TTFetch && !SchedLocal(task, windowRequest, worker) {
+					continue
+				}
 				needRes := worker.Info.Resources.ResourceSpec(task.Sector.ProofType, task.TaskType)
 
 				// TODO: allow bigger windows

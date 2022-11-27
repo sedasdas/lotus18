@@ -34,6 +34,9 @@ import (
 // Logger Instance
 var logLayout = logging.Logger("layout")
 
+type zdy struct {
+	workers []Worker
+}
 type layoutConfig struct {
 	CheckLayout               bool `json:"checkLayout"`
 	LoadConfigFileAfterMinute int  `json:"loadConfigFileAfterMinute"`
