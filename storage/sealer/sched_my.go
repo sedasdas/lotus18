@@ -21,6 +21,7 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		for _, sector := range sectors {
 			log.Debugf(sector)
 			if task.Sector.ID.Number.String() == sector {
+				log.Debugf("分配了" + sector)
 				return true
 			}
 		}
