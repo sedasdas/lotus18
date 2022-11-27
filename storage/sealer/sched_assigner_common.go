@@ -93,6 +93,7 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 					continue
 				}
 				if task.TaskType == sealtasks.TTPreCommit1 || task.TaskType == sealtasks.TTPreCommit2 || task.TaskType == sealtasks.TTCommit1 {
+					log.Debug(task.TaskType)
 					continue
 				}
 				rpcCtx, cancel := context.WithTimeout(task.Ctx, SelectorTimeout)
