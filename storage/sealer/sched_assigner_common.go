@@ -2,7 +2,7 @@ package sealer
 
 import (
 	"context"
-
+	"github.com/filecoin-project/lotus/storage/sealer/sealtasks"
 	"math/rand"
 	"sort"
 	"sync"
@@ -81,7 +81,21 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 					log.Debugw("skipping disabled worker", "worker", windowRequest.Worker)
 					continue
 				}
+
+				//ok, preferred, err := task.Sel.Ok(task.Ctx, task.TaskType, task.Sector.ProofType, worker)
+				//if err != nil || !ok || !preferred {
+				//	continue
+				//}
 				//ws := sh.Workers
+				//if task.TaskType == sealtasks.TTPreCommit1 || task.TaskType == sealtasks.TTPreCommit2 || task.TaskType == sealtasks.TTCommit1 {
+				//	log.Debug(task.TaskType)
+				//	continue
+				//}
+				if task.TaskType != sealtasks.TTFetch {
+					if isExist := task.Sel.FindDataWoker(task.Ctx, task.TaskType, task.Sector.ID, task.Sector.ProofType, worker); !isExist {
+						continue
+					}
+				}
 
 				//if task.TaskType != sealtasks.TTFetch && !WorkerHasLayoutAccess(task, windowRequest) {
 				//	continue
@@ -118,6 +132,10 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 				}
 
 				acceptableWindows[sqi] = append(acceptableWindows[sqi], wnd)
+				if isExist := task.Sel.FindDataWoker(task.Ctx, task.TaskType, task.Sector.ID, task.Sector.ProofType, worker); !isExist {
+					havePreferred = true
+					break
+				}
 			}
 
 			if len(acceptableWindows[sqi]) == 0 {

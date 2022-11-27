@@ -46,7 +46,7 @@ type WorkerSelector interface {
 	// Ok is true if worker is acceptable for performing a task.
 	// If any worker is preferred for a task, other workers won't be considered for that task.
 	Ok(ctx context.Context, task sealtasks.TaskType, spt abi.RegisteredSealProof, a *WorkerHandle) (ok, preferred bool, err error)
-
+	FindDataWoker(ctx context.Context, task sealtasks.TaskType, sid abi.SectorID, spt abi.RegisteredSealProof, a *WorkerHandle) bool
 	Cmp(ctx context.Context, task sealtasks.TaskType, a, b *WorkerHandle) (bool, error) // true if a is preferred over b
 }
 
