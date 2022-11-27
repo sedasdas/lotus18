@@ -12,6 +12,7 @@ var sectors = []string{"9", "10", "5", "6", "7"}
 
 func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *WorkerHandle) bool {
 	log.Debugf(worker.Info.Hostname)
+
 	log.Debugf(task.Sector.ID.Number.String())
 	//per(sector task.Sector.ID.Number.String())
 	log.Debugf("task is ----------------------" + task.TaskType.Short())

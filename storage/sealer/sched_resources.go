@@ -84,11 +84,6 @@ func (a *ActiveResources) Free(tt sealtasks.SealTaskType, wr storiface.WorkerRes
 // handle the request.
 func (a *ActiveResources) CanHandleRequest(tt sealtasks.SealTaskType, needRes storiface.Resources, wid storiface.WorkerID, caller string, info storiface.WorkerInfo) bool {
 
-	for taskType, i := range a.taskCounters {
-		log.Debugf(taskType.String(), i)
-		log.Debug(tt.Short() + "ssssssssssssssssssssssssssssssssssssssss")
-	}
-
 	//log.Debugf(info.Hostname + "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss")
 	if needRes.MaxConcurrent > 0 {
 		if a.taskCounters[tt] >= needRes.MaxConcurrent {
