@@ -92,9 +92,8 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 				//	continue
 				//}
 				if task.TaskType != sealtasks.TTFetch {
-					if isExist := task.Sel.FindDataWoker(task.Ctx, task.TaskType, task.Sector.ID, task.Sector.ProofType, worker); !isExist {
-						continue
-					}
+					continue
+
 				}
 
 				//if task.TaskType != sealtasks.TTFetch && !WorkerHasLayoutAccess(task, windowRequest) {
@@ -132,10 +131,6 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 				}
 
 				acceptableWindows[sqi] = append(acceptableWindows[sqi], wnd)
-				if isExist := task.Sel.FindDataWoker(task.Ctx, task.TaskType, task.Sector.ID, task.Sector.ProofType, worker); !isExist {
-					havePreferred = true
-					break
-				}
 			}
 
 			if len(acceptableWindows[sqi]) == 0 {
