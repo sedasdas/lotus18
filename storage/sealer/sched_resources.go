@@ -86,7 +86,7 @@ func (a *ActiveResources) CanHandleRequest(tt sealtasks.SealTaskType, needRes st
 
 	for taskType, i := range a.taskCounters {
 		log.Debugf(taskType.String(), i)
-		log.Debug(tt)
+		log.Debug(tt.Short() + "ssssssssssssssssssssssssssssssssssssssss")
 	}
 
 	//log.Debugf(info.Hostname + "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss")

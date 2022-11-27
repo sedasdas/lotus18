@@ -8,13 +8,12 @@ type Local struct {
 var s = 3
 
 // var sectors []string
-var sectors = []string{"3", "4", "5"}
+var sectors = []string{"3", "4", "5", "6", "7"}
 
 func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *WorkerHandle) bool {
 	log.Debugf(worker.Info.Hostname)
 	log.Debugf(task.Sector.ID.Number.String())
 	//per(sector task.Sector.ID.Number.String())
-
 	if worker.Info.Hostname == "hcxj-10-0-5-71" {
 		log.Debugf("RIGHT??????????????????????????????")
 		//sectors = append(sectors, task.Sector.ID.Number.String())
