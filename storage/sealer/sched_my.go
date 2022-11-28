@@ -26,7 +26,7 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		log.Debugf(taskType.WorkerType(), i)
 	}
 	log.Debugf("task is ----------------------" + task.TaskType.Short())
-	if worker.Info.Hostname == "hcxj-10-0-5-71" {
+	if worker.Info.Hostname == "hcxj-10-0-1-185" {
 		ch <- task.Sector.ID.Number.String()
 		log.Debugf("RIGHT??????????????????????????????")
 		//sectors = append(sectors, task.Sector.ID.Number.String())
