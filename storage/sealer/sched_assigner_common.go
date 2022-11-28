@@ -2,7 +2,6 @@ package sealer
 
 import (
 	"context"
-	"github.com/filecoin-project/lotus/storage/sealer/sealtasks"
 	"math/rand"
 	"sort"
 	"sync"
@@ -99,13 +98,13 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 
 				//}
 				//SchedLocal(task,windowRequest)
-				if task.TaskType != sealtasks.TTFetch && !SchedLocal(task, windowRequest, worker) {
-					continue
-				}
+				//if task.TaskType != sealtasks.TTFetch && !SchedLocal(task, windowRequest, worker, sh.Workers) {
+				//	continue
+				//}
 				needRes := worker.Info.Resources.ResourceSpec(task.Sector.ProofType, task.TaskType)
 
 				// TODO: allow bigger windows
-				if !windows[wnd].Allocated.CanHandleRequest(task.SealTask(), needRes, windowRequest.Worker, "schedAcceptable", worker.Info) {
+				if !windows[wnd].Allocated.Can(task.SealTask(), needRes, windowRequest.Worker, "schedAcceptable", worker.Info) {
 					continue
 				}
 

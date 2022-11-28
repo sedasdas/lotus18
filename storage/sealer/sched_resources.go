@@ -82,6 +82,16 @@ func (a *ActiveResources) Free(tt sealtasks.SealTaskType, wr storiface.WorkerRes
 
 // CanHandleRequest evaluates if the worker has enough available resources to
 // handle the request.
+func (a *ActiveResources) Can(tt sealtasks.SealTaskType, needRes storiface.Resources, wid storiface.WorkerID, caller string, info storiface.WorkerInfo) bool {
+	if needRes.MaxConcurrent > 0 {
+		if a.taskCounters[tt] >= needRes.MaxConcurrent {
+			log.Debugf("sched: not scheduling on worker %s for %s; at task limit tt=%s, curcount=%d", wid, caller, tt, a.taskCounters[tt])
+			return false
+		}
+	}
+	return true
+}
+
 func (a *ActiveResources) CanHandleRequest(tt sealtasks.SealTaskType, needRes storiface.Resources, wid storiface.WorkerID, caller string, info storiface.WorkerInfo) bool {
 
 	//log.Debugf(info.Hostname + "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss")
