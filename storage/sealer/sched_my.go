@@ -62,10 +62,12 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 					log.Debugf("拉取文件中")
 					return true
 				}
+				log.Debugf(w.ServerName + "正在执行" + task.TaskType.Short())
+				return true
 			} else {
 				//if task.TaskType.Short() == "AP" {
 				w.Sectors = append(w.Sectors, task.Sector.ID.Number.String())
-				log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
+				log.Debugf("分配了" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
 				return true
 				//}
 			}
