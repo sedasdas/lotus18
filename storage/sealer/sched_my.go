@@ -36,7 +36,7 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 	if len(ws) == 0 {
 		neww := &Local{
 			ServerName: worker.Info.Hostname,
-			Sectors:    []string{" "},
+			Sectors:    []string{"1"},
 		}
 		ws = append(ws, *neww)
 		log.Debugf("新建了" + neww.ServerName)
@@ -45,7 +45,7 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		if w.ServerName != worker.Info.Hostname {
 			neww := &Local{
 				ServerName: worker.Info.Hostname,
-				Sectors:    []string{" "},
+				Sectors:    []string{"1"},
 			}
 			ws = append(ws, *neww)
 			log.Debugf("新建了" + w.ServerName)
