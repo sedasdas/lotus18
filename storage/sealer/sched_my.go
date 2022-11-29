@@ -15,7 +15,7 @@ var se = make(map[string]string)
 //var ch = make(chan string)
 
 // var sectors []string
-var sectors []string
+var ws []Local
 
 func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *WorkerHandle, workers map[storiface.WorkerID]*WorkerHandle) bool {
 	//stat =
@@ -32,10 +32,36 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 	//	log.Debugf(handle.Info.Hostname)
 	//}
 	//for taskType, i := range worker.active.taskCounters {
-	log.Debugf(string(len(se)))
+	for i, w := range ws {
+		if w.ServerName != worker.Info.Hostname {
+			neww := new(Local)
+			neww.ServerName = w.ServerName
+			ws[i] = *neww
+			log.Debugf("新建了" + w.ServerName)
+		}
+	}
+	//log.Debugf(len(ws))
 	//log.Debugf("taskCounters"+taskType.Short(), i)
-	log.Debugf("task is ----------------------" + task.TaskType.Short())
-	if task.TaskType.Short() == "FIN" && len(se) > 0 {
+	//log.Debugf("task is ----------------------" + task.TaskType.Short())
+	for _, w := range ws {
+		for i := 0; i < len(w.Sectors); i++ {
+			if w.Sectors[i] == task.Sector.ID.Number.String() {
+				if task.TaskType.Short() == "FIN" && len(w.Sectors) > 0 {
+					w.Sectors = w.Sectors[0 : len(w.Sectors)-1]
+					log.Debugf("拉取文件中")
+					return true
+				}
+				return true
+			} else {
+				if task.TaskType.Short() == "AP" {
+					w.Sectors = append(w.Sectors, task.Sector.ID.Number.String())
+					log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
+					return true
+				}
+			}
+		}
+	}
+	/*if task.TaskType.Short() == "FIN" && len(se) > 0 {
 		delete(se, task.TaskType.Short())
 		log.Debugf("拉取文件中")
 		return true
@@ -64,6 +90,8 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 	//}
 	//log.Debugf("len=%d cap=%d slice=%v\n", len(sectors), cap(sectors), sectors)
 	//}
+
+	*/
 
 	return false
 }
