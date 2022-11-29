@@ -32,22 +32,24 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		id.String()
 		log.Debugf(handle.Info.Hostname)
 	}
-	for taskType, i := range worker.active.taskCounters {
-		log.Debugf("taskCounters"+taskType.Short(), i)
-		if taskType.Short() == "AP" && len(se) < 1 {
-			se[task.Sector.ID.Number.String()] = worker.Info.Hostname
-			return true
-		}
-		if taskType.Short() == "FIN" && len(se) > 0 {
-			for k := range se {
-				if k == task.Sector.ID.Number.String() {
-					delete(se, k)
-					return true
-				}
-			}
-			//se[task.Sector.ID.Number.String()] = worker.Info.Hostname
-		}
+	//for taskType, i := range worker.active.taskCounters {
+	log.Debugf(string(len(se)))
+	//log.Debugf("taskCounters"+taskType.Short(), i)
+	log.Debugf("task is ----------------------" + task.TaskType.Short())
+	if task.TaskType.Short() == "AP" && len(se) < 1 {
+		se[task.Sector.ID.Number.String()] = worker.Info.Hostname
+		return true
 	}
+	if task.TaskType.Short() == "FIN" && len(se) > 0 {
+		for k := range se {
+			if k == task.Sector.ID.Number.String() {
+				delete(se, k)
+				return true
+			}
+		}
+		//se[task.Sector.ID.Number.String()] = worker.Info.Hostname
+	}
+
 	log.Debugf("task is ----------------------" + task.TaskType.Short())
 	//if worker.Info.Hostname == "hcxj-10-0-1-185" {
 	//ch <- task.Sector.ID.Number.String()
