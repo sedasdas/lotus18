@@ -11,7 +11,8 @@ type Local struct {
 }
 
 var stat storiface.WorkerStats
-var ch = make(chan string)
+
+//var ch = make(chan string)
 
 // var sectors []string
 var sectors = []string{"2", "3", "4"}
@@ -31,7 +32,7 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		log.Debugf(handle.Info.Hostname)
 	}
 	for taskType, i := range worker.active.taskCounters {
-		log.Debugf("taskCounters"+taskType.WorkerType(), i)
+		log.Debugf("taskCounters"+taskType.Short(), i)
 	}
 	log.Debugf("task is ----------------------" + task.TaskType.Short())
 	if worker.Info.Hostname == "hcxj-10-0-1-185" {
