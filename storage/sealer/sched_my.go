@@ -11,11 +11,12 @@ type Local struct {
 }
 
 var stat storiface.WorkerStats
+var se = make(map[string]string)
 
 //var ch = make(chan string)
 
 // var sectors []string
-var sectors = []string{"2", "3", "4"}
+var sectors []string
 
 func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *WorkerHandle, workers map[storiface.WorkerID]*WorkerHandle) bool {
 	//stat =
@@ -33,18 +34,31 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 	}
 	for taskType, i := range worker.active.taskCounters {
 		log.Debugf("taskCounters"+taskType.Short(), i)
+		if taskType.Short() == "PC1" && len(se) < 1 {
+			se[task.Sector.ID.Number.String()] = worker.Info.Hostname
+			return true
+		}
+		if taskType.Short() == "FIN" && len(se) > 0 {
+			for k := range se {
+				if k == task.Sector.ID.Number.String() {
+					delete(se, k)
+					return true
+				}
+			}
+			//se[task.Sector.ID.Number.String()] = worker.Info.Hostname
+		}
 	}
 	log.Debugf("task is ----------------------" + task.TaskType.Short())
-	if worker.Info.Hostname == "hcxj-10-0-1-185" {
-		//ch <- task.Sector.ID.Number.String()
-		log.Debugf("RIGHT??????????????????????????????")
-		//sectors = append(sectors, task.Sector.ID.Number.String())
-		//for _, sector := range sectors {
-		//log.Debugf(sector)
-		return true
-		//}
-		//log.Debugf("len=%d cap=%d slice=%v\n", len(sectors), cap(sectors), sectors)
-	}
+	//if worker.Info.Hostname == "hcxj-10-0-1-185" {
+	//ch <- task.Sector.ID.Number.String()
+	//log.Debugf("RIGHT??????????????????????????????")
+	//sectors = append(sectors, task.Sector.ID.Number.String())
+	//for _, sector := range sectors {
+	//log.Debugf(sector)
+	//	return true
+	//}
+	//log.Debugf("len=%d cap=%d slice=%v\n", len(sectors), cap(sectors), sectors)
+	//}
 
 	return false
 }
