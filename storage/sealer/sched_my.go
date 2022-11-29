@@ -34,7 +34,10 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 	//for taskType, i := range worker.active.taskCounters {
 	for i, w := range ws {
 		if w.ServerName != worker.Info.Hostname {
-			neww := new(Local)
+			neww := &Local{
+				ServerName: worker.Info.Hostname,
+				Sectors:    nil,
+			}
 			neww.ServerName = w.ServerName
 			ws[i] = *neww
 			log.Debugf("新建了" + w.ServerName)
