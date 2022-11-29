@@ -36,18 +36,19 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 	log.Debugf(string(len(se)))
 	//log.Debugf("taskCounters"+taskType.Short(), i)
 	log.Debugf("task is ----------------------" + task.TaskType.Short())
-	if task.TaskType.Short() == "AP" && len(se) < 1 {
-		se[task.Sector.ID.Number.String()] = worker.Info.Hostname
+	if task.TaskType.Short() == "FIN" && len(se) > 0 {
+		delete(se, task.TaskType.Short())
+		return true
+		//se[task.Sector.ID.Number.String()] = worker.Info.Hostname
+	}
+
+	_, ok := se[task.Sector.ID.Number.String()]
+	if ok {
 		return true
 	}
-	if task.TaskType.Short() == "FIN" && len(se) > 0 {
-		for k := range se {
-			if k == task.Sector.ID.Number.String() {
-				delete(se, k)
-				return true
-			}
-		}
-		//se[task.Sector.ID.Number.String()] = worker.Info.Hostname
+	if task.TaskType.Short() == "AP" {
+		se[task.Sector.ID.Number.String()] = worker.Info.Hostname
+		return true
 	}
 
 	log.Debugf("task is ----------------------" + task.TaskType.Short())
