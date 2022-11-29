@@ -32,7 +32,9 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 	//	log.Debugf(handle.Info.Hostname)
 	//}
 	//for taskType, i := range worker.active.taskCounters {
+	log.Debugf(worker.Info.Hostname)
 	if len(ws) == 0 {
+		log.Debugf(worker.Info.Hostname)
 		neww := &Local{
 			ServerName: worker.Info.Hostname,
 			Sectors:    nil,
