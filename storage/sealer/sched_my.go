@@ -15,7 +15,7 @@ var se = make(map[string]string)
 //var ch = make(chan string)
 
 // var sectors []string
-var ws []Local
+var ws = []Local{}
 
 func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *WorkerHandle, workers map[storiface.WorkerID]*WorkerHandle) bool {
 	//stat =
