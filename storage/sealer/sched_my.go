@@ -14,7 +14,7 @@ var stat storiface.WorkerStats
 var ch = make(chan string)
 
 // var sectors []string
-var sectors = []string{}
+var sectors = []string{"2", "3", "4"}
 
 func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *WorkerHandle, workers map[storiface.WorkerID]*WorkerHandle) bool {
 	//stat =
@@ -38,7 +38,13 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		ch <- task.Sector.ID.Number.String()
 		log.Debugf("RIGHT??????????????????????????????")
 		//sectors = append(sectors, task.Sector.ID.Number.String())
-		return true
+		for _, sector := range sectors {
+			log.Debugf(sector)
+			if task.Sector.ID.Number.String() == sector {
+				log.Debugf("分配了" + sector)
+				return true
+			}
+		}
 		//log.Debugf("len=%d cap=%d slice=%v\n", len(sectors), cap(sectors), sectors)
 	}
 
