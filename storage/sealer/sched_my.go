@@ -34,7 +34,7 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 	}
 	for taskType, i := range worker.active.taskCounters {
 		log.Debugf("taskCounters"+taskType.Short(), i)
-		if taskType.Short() == "PC1" && len(se) < 1 {
+		if taskType.Short() == "AP" && len(se) < 1 {
 			se[task.Sector.ID.Number.String()] = worker.Info.Hostname
 			return true
 		}
