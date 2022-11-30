@@ -8,6 +8,8 @@ import (
 
 type WindowSelector func(sh *Scheduler, queueLen int, acceptableWindows [][]int, windows []SchedWindow) int
 
+var se = make(map[string]string)
+
 // AssignerCommon is a task assigner with customizable parts
 type AssignerCommon struct {
 	WindowSel WindowSelector

@@ -16,8 +16,6 @@ import (
 
 type schedPrioCtxKey int
 
-var se = make(map[string]string)
-
 var SchedPriorityKey schedPrioCtxKey
 var DefaultSchedPriority = 0
 var SelectorTimeout = 5 * time.Second
