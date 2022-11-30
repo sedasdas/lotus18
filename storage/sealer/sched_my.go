@@ -33,7 +33,7 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 	//}
 	//for taskType, i := range worker.active.taskCounters {
 	//log.Debugf(worker.Info.Hostname)
-	if len(ws) == 0 {
+	/*if len(ws) == 0 {
 		neww := &Local{
 			ServerName: worker.Info.Hostname,
 			Sectors:    []string{"1"},
@@ -55,11 +55,13 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 	//log.Debugf("taskCounters"+taskType.Short(), i)
 	//log.Debugf("task is ----------------------" + task.TaskType.Short())
 	for _, w := range ws {
-		for _, sector := range w.Sectors {
+		ss := w.Sectors
+		for _, sector := range ss {
 			if sector == task.Sector.ID.Number.String() {
 				if task.TaskType.Short() == "FIN" {
-					w.Sectors = w.Sectors[0 : len(w.Sectors)-1]
+					ss = ss[0 : len(w.Sectors)-1]
 					log.Debugf("拉取文件中")
+
 					return true
 				}
 				log.Debugf(w.ServerName + "正在执行" + task.TaskType.Short())
@@ -68,6 +70,7 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 				log.Debugf(sector + "is" + task.Sector.ID.Number.String())
 				//if task.TaskType.Short() == "AP" {
 				w.Sectors = append(w.Sectors, task.Sector.ID.Number.String())
+
 				log.Debugf("分配了" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
 				return true
 				//}
@@ -80,9 +83,14 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		return true
 		//se[task.Sector.ID.Number.String()] = worker.Info.Hostname
 	}
-
+	*/
 	_, ok := se[task.Sector.ID.Number.String()]
 	if ok {
+		if task.TaskType.Short() == "FIN" && len(se) > 0 {
+			delete(se, task.TaskType.Short())
+			log.Debugf("拉取文件中")
+			return true
+		}
 		log.Debugf(worker.Info.Hostname + "正在执行" + task.TaskType.Short())
 		return true
 	}
@@ -103,8 +111,6 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 	//}
 	//log.Debugf("len=%d cap=%d slice=%v\n", len(sectors), cap(sectors), sectors)
 	//}
-
-	*/
 
 	return false
 }
