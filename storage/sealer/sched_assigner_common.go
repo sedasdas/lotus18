@@ -145,45 +145,4 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 
 	wg.Wait()
 
-	log.Debugf("SCHED windows: %+v", windows)
-	log.Debugf("SCHED Acceptable win: %+v", acceptableWindows)
-
-	// Step 2
-	scheduled := a.WindowSel(sh, queueLen, acceptableWindows, windows)
-
-	// Step 3
-
-	if scheduled == 0 {
-		return
-	}
-
-	scheduledWindows := map[int]struct{}{}
-	for wnd, window := range windows {
-		if len(window.Todo) == 0 {
-			// Nothing scheduled here, keep the window open
-			continue
-		}
-
-		scheduledWindows[wnd] = struct{}{}
-
-		window := window // copy
-		select {
-		case sh.OpenWindows[wnd].Done <- &window:
-		default:
-			log.Error("expected sh.OpenWindows[wnd].Done to be buffered")
-		}
-	}
-
-	// Rewrite sh.OpenWindows array, removing scheduled windows
-	newOpenWindows := make([]*SchedWindowRequest, 0, windowsLen-len(scheduledWindows))
-	for wnd, window := range sh.OpenWindows {
-		if _, scheduled := scheduledWindows[wnd]; scheduled {
-			// keep unscheduled windows open
-			continue
-		}
-
-		newOpenWindows = append(newOpenWindows, window)
-	}
-
-	sh.OpenWindows = newOpenWindows
 }
