@@ -3,8 +3,6 @@ package sealer
 import (
 	"context"
 	"github.com/filecoin-project/lotus/storage/sealer/sealtasks"
-	"math/rand"
-	"sort"
 	"sync"
 )
 
@@ -141,30 +139,7 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 			}
 
 			// Pick best worker (shuffle in case some workers are equally as good)
-			rand.Shuffle(len(acceptableWindows[sqi]), func(i, j int) {
-				acceptableWindows[sqi][i], acceptableWindows[sqi][j] = acceptableWindows[sqi][j], acceptableWindows[sqi][i] // nolint:scopelint
-			})
-			sort.SliceStable(acceptableWindows[sqi], func(i, j int) bool {
-				wii := sh.OpenWindows[acceptableWindows[sqi][i]].Worker // nolint:scopelint
-				wji := sh.OpenWindows[acceptableWindows[sqi][j]].Worker // nolint:scopelint
 
-				if wii == wji {
-					// for the same worker prefer older windows
-					return acceptableWindows[sqi][i] < acceptableWindows[sqi][j] // nolint:scopelint
-				}
-
-				wi := sh.Workers[wii]
-				wj := sh.Workers[wji]
-
-				rpcCtx, cancel := context.WithTimeout(task.Ctx, SelectorTimeout)
-				defer cancel()
-
-				r, err := task.Sel.Cmp(rpcCtx, task.TaskType, wi, wj)
-				if err != nil {
-					log.Errorf("selecting best worker: %s", err)
-				}
-				return r
-			})
 		}(i)
 	}
 
