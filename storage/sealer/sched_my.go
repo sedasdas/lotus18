@@ -102,11 +102,9 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		}
 
 	}
-	if task.TaskType.Short() == "AP" {
-		lck.Lock()
+	if !ok && task.TaskType.Short() == "AP" {
 		se[task.Sector.ID.Number.String()] = worker.Info.Hostname
 		log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
-		lck.Unlock()
 		return true
 	}
 
