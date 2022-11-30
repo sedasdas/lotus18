@@ -86,25 +86,34 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		//se[task.Sector.ID.Number.String()] = worker.Info.Hostname
 	}
 	*/
-	lck.Lock()
 
 	_, ok := se[task.Sector.ID.Number.String()]
 	if ok {
 		if task.TaskType.Short() == "FIN" && len(se) > 0 {
+			lck.Lock()
+
 			delete(se, task.TaskType.Short())
 			log.Debugf("拉取文件中")
+			lck.Unlock()
+
 			return true
 		}
+		lck.Lock()
 
 		log.Debugf(worker.Info.Hostname + "正在执行" + task.TaskType.Short())
+		lck.Unlock()
+
 		return true
 	}
 	if task.TaskType.Short() == "AP" {
+		lck.Lock()
+
 		se[task.Sector.ID.Number.String()] = worker.Info.Hostname
 		log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
+		lck.Unlock()
+
 		return true
 	}
-	lck.Unlock()
 
 	//log.Debugf("task is ----------------------" + task.TaskType.Short())
 	//if worker.Info.Hostname == "hcxj-10-0-1-185" {
