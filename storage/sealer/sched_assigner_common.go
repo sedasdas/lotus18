@@ -100,7 +100,7 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 				if task.TaskType != sealtasks.TTFetch && !SchedLocal(task, windowRequest, worker, sh.Workers) {
 					continue
 				}
-				needRes := worker.Info.Resources.ResourceSpec(task.Sector.ProofType, task.TaskType)
+				//needRes := worker.Info.Resources.ResourceSpec(task.Sector.ProofType, task.TaskType)
 
 				// TODO: allow bigger windows
 				//if !windows[wnd].Allocated.CanHandleRequest(task.SealTask(), needRes, windowRequest.Worker, "schedAcceptable", worker.Info) {
