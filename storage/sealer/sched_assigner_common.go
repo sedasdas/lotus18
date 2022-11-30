@@ -103,9 +103,9 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 				needRes := worker.Info.Resources.ResourceSpec(task.Sector.ProofType, task.TaskType)
 
 				// TODO: allow bigger windows
-				if !windows[wnd].Allocated.CanHandleRequest(task.SealTask(), needRes, windowRequest.Worker, "schedAcceptable", worker.Info) {
-					continue
-				}
+				//if !windows[wnd].Allocated.CanHandleRequest(task.SealTask(), needRes, windowRequest.Worker, "schedAcceptable", worker.Info) {
+				//	continue
+				//}
 
 				rpcCtx, cancel := context.WithTimeout(task.Ctx, SelectorTimeout)
 
