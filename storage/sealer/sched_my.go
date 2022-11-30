@@ -2,17 +2,12 @@ package sealer
 
 import (
 	"github.com/filecoin-project/lotus/storage/sealer/storiface"
-	"sync"
 )
 
 type Local struct {
 	ServerName string   `json:"serverName"`
 	Sectors    []string `json:"sectors"`
 }
-
-var stat storiface.WorkerStats
-var se = make(map[string]string)
-var lck sync.Mutex
 
 //var ch = make(chan string)
 

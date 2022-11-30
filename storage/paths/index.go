@@ -477,6 +477,7 @@ func (i *Index) StorageFindSector(ctx context.Context, s abi.SectorID, ft storif
 	}
 
 	if allowFetch {
+
 		spaceReq, err := ft.SealSpaceUse(ssize)
 		if err != nil {
 			return nil, xerrors.Errorf("estimating required space: %w", err)
