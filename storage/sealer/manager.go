@@ -29,6 +29,7 @@ import (
 )
 
 var log = logging.Logger("advmgr")
+var se = make(map[string]string)
 
 var ErrNoWorkers = errors.New("no suitable workers found")
 
