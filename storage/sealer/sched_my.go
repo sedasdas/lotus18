@@ -1,16 +1,20 @@
 package sealer
 
-type Local struct {
-	ServerName string   `json:"serverName"`
-	Sectors    []string `json:"sectors"`
-}
+import "sync"
+
+//type Local struct {
+//	ServerName string   `json:"serverName"`
+//	Sectors    []string `json:"sectors"`
+//}
 
 //var ch = make(chan string)
 
 // var sectors []string
-var ws = []Local{}
+// var ws = []Local{}
+var l sync.Mutex
 
 func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *WorkerHandle) bool {
+	l.Lock()
 	//stat =
 	//per(task.TaskType.Short(), task.Sector.ID.Number.String(), worker.Info.Hostname)
 	//log.Debugf(task.Sector.ID.Number.String())
@@ -77,32 +81,32 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		//se[task.Sector.ID.Number.String()] = worker.Info.Hostname
 	}
 	*/
-	/*
-		h, ok := se[task.Sector.ID.Number.String()]
-		if ok {
-			if task.TaskType.Short() == "FIN" && h == worker.Info.Hostname {
-				delete(se, task.TaskType.Short())
-				log.Debugf("拉取文件中")
 
-				return true
-			}
-			if h == worker.Info.Hostname {
-				log.Debugf(worker.Info.Hostname + "正在执行" + task.TaskType.Short())
-				return true
+	h, ok := se[task.Sector.ID.Number.String()]
+	if ok {
+		if task.TaskType.Short() == "FIN" && h == worker.Info.Hostname {
+			delete(se, task.TaskType.Short())
+			log.Debugf("拉取文件中")
 
-			}
-
-		}
-		if !ok && task.TaskType.Short() == "AP" {
-			se[task.Sector.ID.Number.String()] = worker.Info.Hostname
-			log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
 			return true
 		}
-	*/
-	//log.Debugf("task is ----------------------" + task.TaskType.Short())
-	if worker.Info.Hostname == "hcxj-10-0-1-185" {
+		if h == worker.Info.Hostname {
+			log.Debugf(worker.Info.Hostname + "正在执行" + task.TaskType.Short())
+			return true
+
+		}
+
+	}
+	if !ok && task.TaskType.Short() == "AP" {
+		se[task.Sector.ID.Number.String()] = worker.Info.Hostname
+		log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
 		return true
 	}
+
+	//log.Debugf("task is ----------------------" + task.TaskType.Short())
+	//	if worker.Info.Hostname == "hcxj-10-0-1-185" {
+	//	return true
+	//}
 	//ch <- task.Sector.ID.Number.String()
 	//log.Debugf("RIGHT??????????????????????????????")
 	//sectors = append(sectors, task.Sector.ID.Number.String())
@@ -112,6 +116,6 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 	//}
 	//log.Debugf("len=%d cap=%d slice=%v\n", len(sectors), cap(sectors), sectors)
 	//}
-
+	l.Unlock()
 	return false
 }
