@@ -77,30 +77,32 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		//se[task.Sector.ID.Number.String()] = worker.Info.Hostname
 	}
 	*/
+	/*
+		h, ok := se[task.Sector.ID.Number.String()]
+		if ok {
+			if task.TaskType.Short() == "FIN" && h == worker.Info.Hostname {
+				delete(se, task.TaskType.Short())
+				log.Debugf("拉取文件中")
 
-	h, ok := se[task.Sector.ID.Number.String()]
-	if ok {
-		if task.TaskType.Short() == "FIN" && h == worker.Info.Hostname {
-			delete(se, task.TaskType.Short())
-			log.Debugf("拉取文件中")
+				return true
+			}
+			if h == worker.Info.Hostname {
+				log.Debugf(worker.Info.Hostname + "正在执行" + task.TaskType.Short())
+				return true
 
+			}
+
+		}
+		if !ok && task.TaskType.Short() == "AP" {
+			se[task.Sector.ID.Number.String()] = worker.Info.Hostname
+			log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
 			return true
 		}
-		if h == worker.Info.Hostname {
-			log.Debugf(worker.Info.Hostname + "正在执行" + task.TaskType.Short())
-			return true
-
-		}
-
-	}
-	if !ok && task.TaskType.Short() == "AP" {
-		se[task.Sector.ID.Number.String()] = worker.Info.Hostname
-		log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
+	*/
+	//log.Debugf("task is ----------------------" + task.TaskType.Short())
+	if worker.Info.Hostname == "hcxj-10-0-1-185" {
 		return true
 	}
-
-	//log.Debugf("task is ----------------------" + task.TaskType.Short())
-	//if worker.Info.Hostname == "hcxj-10-0-1-185" {
 	//ch <- task.Sector.ID.Number.String()
 	//log.Debugf("RIGHT??????????????????????????????")
 	//sectors = append(sectors, task.Sector.ID.Number.String())
