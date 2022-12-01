@@ -14,7 +14,6 @@ import "sync"
 var l sync.Mutex
 
 func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *WorkerHandle) bool {
-	l.Lock()
 	//stat =
 	//per(task.TaskType.Short(), task.Sector.ID.Number.String(), worker.Info.Hostname)
 	//log.Debugf(task.Sector.ID.Number.String())
@@ -81,25 +80,33 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		//se[task.Sector.ID.Number.String()] = worker.Info.Hostname
 	}
 	*/
-
+	l.Lock()
 	h, ok := se[task.Sector.ID.Number.String()]
+	l.Unlock()
 	if ok {
 		if task.TaskType.Short() == "FIN" && h == worker.Info.Hostname {
+			l.Lock()
 			delete(se, task.TaskType.Short())
 			log.Debugf("拉取文件中")
+			l.Unlock()
 
 			return true
 		}
 		if h == worker.Info.Hostname {
+			l.Lock()
 			log.Debugf(worker.Info.Hostname + "正在执行" + task.TaskType.Short())
+			l.Unlock()
+
 			return true
 
 		}
 
 	}
 	if !ok && task.TaskType.Short() == "AP" {
+		l.Lock()
 		se[task.Sector.ID.Number.String()] = worker.Info.Hostname
 		log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
+		l.Unlock()
 		return true
 	}
 
