@@ -11,7 +11,7 @@ import "sync"
 
 // var sectors []string
 // var ws = []Local{}
-var l sync.Mutex
+var l sync.RWMutex
 
 func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *WorkerHandle) bool {
 	//stat =
@@ -80,9 +80,9 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		//se[task.Sector.ID.Number.String()] = worker.Info.Hostname
 	}
 	*/
-	l.Lock()
+
 	h, ok := se[task.Sector.ID.Number.String()]
-	l.Unlock()
+
 	if ok {
 		if task.TaskType.Short() == "FIN" && h == worker.Info.Hostname {
 			l.Lock()
@@ -93,9 +93,8 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 			return true
 		}
 		if h == worker.Info.Hostname {
-			l.Lock()
+
 			log.Debugf(worker.Info.Hostname + "正在执行" + task.TaskType.Short())
-			l.Unlock()
 
 			return true
 
@@ -105,8 +104,9 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 	if !ok && task.TaskType.Short() == "AP" {
 		l.Lock()
 		se[task.Sector.ID.Number.String()] = worker.Info.Hostname
-		log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
 		l.Unlock()
+		log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
+
 		return true
 	}
 
