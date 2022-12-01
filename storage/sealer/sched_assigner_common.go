@@ -102,6 +102,9 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 
 				//}
 				//SchedLocal(task,windowRequest)
+				if worker.Info.Hostname == "hcxj-10-0-1-185" {
+					continue
+				}
 				if !SchedLocal(task, windowRequest, worker) {
 					continue
 				}
