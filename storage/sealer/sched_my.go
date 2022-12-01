@@ -1,9 +1,5 @@
 package sealer
 
-import (
-	"github.com/filecoin-project/lotus/storage/sealer/storiface"
-)
-
 type Local struct {
 	ServerName string   `json:"serverName"`
 	Sectors    []string `json:"sectors"`
@@ -14,7 +10,7 @@ type Local struct {
 // var sectors []string
 var ws = []Local{}
 
-func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *WorkerHandle, workers map[storiface.WorkerID]*WorkerHandle) bool {
+func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *WorkerHandle) bool {
 	//stat =
 	//per(task.TaskType.Short(), task.Sector.ID.Number.String(), worker.Info.Hostname)
 	//log.Debugf(task.Sector.ID.Number.String())
