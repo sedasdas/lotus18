@@ -74,7 +74,7 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 					// TODO: How to move forward here?
 					continue
 				}
-				if worker.Info.Hostname != "hcxj-10-0-1-185" {
+				if worker.Info.Hostname == "hcxj-10-0-1-185" {
 					log.Debugw("skipping 185 worker")
 					continue
 				}
