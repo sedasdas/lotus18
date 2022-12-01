@@ -67,13 +67,17 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 			var havePreferred bool
 
 			for wnd, windowRequest := range sh.OpenWindows {
+
 				worker, ok := sh.Workers[windowRequest.Worker]
 				if !ok {
 					log.Errorf("worker referenced by windowRequest not found (worker: %s)", windowRequest.Worker)
 					// TODO: How to move forward here?
 					continue
 				}
-
+				if worker.Info.Hostname != "hcxj-10-0-1-185" {
+					log.Debugw("skipping 185 worker")
+					continue
+				}
 				if !worker.Enabled {
 					log.Debugw("skipping disabled worker", "worker", windowRequest.Worker)
 					continue
