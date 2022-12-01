@@ -12,7 +12,6 @@ import "sync"
 // var sectors []string
 // var ws = []Local{}
 var mutex = &sync.RWMutex{}
-var scene sync.Map
 
 func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *WorkerHandle) bool {
 	//stat =

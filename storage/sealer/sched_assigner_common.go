@@ -1,7 +1,11 @@
 package sealer
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"fmt"
+	"os"
 	"sync"
 )
 
@@ -13,6 +17,7 @@ type AssignerCommon struct {
 }
 
 var _ Assigner = &AssignerCommon{}
+var scene sync.Map
 
 func (a *AssignerCommon) TrySched(sh *Scheduler) {
 	/*
@@ -74,10 +79,7 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 					// TODO: How to move forward here?
 					continue
 				}
-				if worker.Info.Hostname == "hcxj-10-0-1-185" {
-					log.Debugw("skipping 185 worker")
-					continue
-				}
+
 				if !worker.Enabled {
 					log.Debugw("skipping disabled worker", "worker", windowRequest.Worker)
 					continue
@@ -147,10 +149,10 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 	}
 
 	wg.Wait()
-
 	log.Debugf("SCHED windows: %+v", windows)
 	log.Debugf("SCHED Acceptable win: %+v", acceptableWindows)
 
+	write()
 	// Step 2
 	scheduled := a.WindowSel(sh, queueLen, acceptableWindows, windows)
 
@@ -189,4 +191,29 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 	}
 
 	sh.OpenWindows = newOpenWindows
+
+}
+
+func write() {
+	whitelist := map[string]string{}
+	scene.Range(func(k, v interface{}) bool {
+		whitelist[fmt.Sprint(k)] = fmt.Sprint(v)
+		return true
+	})
+	fmt.Println("Done.")
+
+	f, err := os.OpenFile("/home/ts/json", os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	buf := new(bytes.Buffer)
+	err = json.NewEncoder(buf).Encode(whitelist)
+	if err != nil {
+		panic(err)
+	}
+	_, err = f.Write([]byte(buf.Bytes()))
+	if err != nil {
+		panic(err)
+	}
 }
