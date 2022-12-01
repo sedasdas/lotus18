@@ -12,6 +12,7 @@ import "sync"
 // var sectors []string
 // var ws = []Local{}
 var mutex = &sync.RWMutex{}
+var scene sync.Map
 
 func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *WorkerHandle) bool {
 	//stat =
@@ -80,16 +81,11 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		//se[task.Sector.ID.Number.String()] = worker.Info.Hostname
 	}
 	*/
-	mutex.RLock()
-	h, ok := se[task.Sector.ID.Number.String()]
-	mutex.RUnlock()
+	h, ok := scene.Load(task.Sector.ID.Number.String())
 	if ok {
 		if task.TaskType.Short() == "FIN" && h == worker.Info.Hostname {
-			mutex.Lock()
-			delete(se, task.TaskType.Short())
-			mutex.Unlock()
+			scene.Delete(task.Sector.ID.Number.String())
 			log.Debugf("拉取文件中")
-
 			return true
 		}
 		if h == worker.Info.Hostname {
@@ -102,12 +98,8 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 
 	}
 	if !ok && task.TaskType.Short() == "AP" {
-		mutex.RLock()
-
-		se[task.Sector.ID.Number.String()] = worker.Info.Hostname
-		mutex.RUnlock()
+		scene.Store(task.Sector.ID.Number.String(), worker.Info.Hostname)
 		log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
-
 		return true
 	}
 
