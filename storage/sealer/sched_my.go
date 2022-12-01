@@ -11,7 +11,6 @@ import "sync"
 
 // var sectors []string
 // var ws = []Local{}
-var l sync.RWMutex
 
 func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *WorkerHandle) bool {
 	//stat =
@@ -80,41 +79,42 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		//se[task.Sector.ID.Number.String()] = worker.Info.Hostname
 	}
 	*/
-	/*
-		h, ok := se[task.Sector.ID.Number.String()]
+	var mutex = &sync.Mutex{}
+	h, ok := se[task.Sector.ID.Number.String()]
 
-		if ok {
-			if task.TaskType.Short() == "FIN" && h == worker.Info.Hostname {
-				l.Lock()
-				delete(se, task.TaskType.Short())
-				log.Debugf("拉取文件中")
-				l.Unlock()
-
-				return true
-			}
-			if h == worker.Info.Hostname {
-
-				log.Debugf(worker.Info.Hostname + "正在执行" + task.TaskType.Short())
-
-				return true
-
-			}
-
-		}
-		if !ok && task.TaskType.Short() == "AP" {
-			l.Lock()
-			se[task.Sector.ID.Number.String()] = worker.Info.Hostname
-
-			l.Unlock()
-			log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
+	if ok {
+		if task.TaskType.Short() == "FIN" && h == worker.Info.Hostname {
+			mutex.Lock()
+			delete(se, task.TaskType.Short())
+			log.Debugf("拉取文件中")
+			mutex.Unlock()
 
 			return true
 		}
-	*/
-	//log.Debugf("task is ----------------------" + task.TaskType.Short())
-	if worker.Info.Hostname == "hcxj-10-0-1-185" {
+		if h == worker.Info.Hostname {
+
+			log.Debugf(worker.Info.Hostname + "正在执行" + task.TaskType.Short())
+
+			return true
+
+		}
+
+	}
+	if !ok && task.TaskType.Short() == "AP" {
+		mutex.Lock()
+
+		se[task.Sector.ID.Number.String()] = worker.Info.Hostname
+
+		log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
+		mutex.Unlock()
+
 		return true
 	}
+
+	//log.Debugf("task is ----------------------" + task.TaskType.Short())
+	//if worker.Info.Hostname == "hcxj-10-0-1-185" {
+	//	return true
+	//}
 	//ch <- task.Sector.ID.Number.String()
 	//log.Debugf("RIGHT??????????????????????????????")
 	//sectors = append(sectors, task.Sector.ID.Number.String())
@@ -124,6 +124,5 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 	//}
 	//log.Debugf("len=%d cap=%d slice=%v\n", len(sectors), cap(sectors), sectors)
 	//}
-	l.Unlock()
 	return false
 }
