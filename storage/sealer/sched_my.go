@@ -80,14 +80,16 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 	}
 	*/
 	var mutex = &sync.Mutex{}
+	mutex.Lock()
+	defer mutex.Unlock()
 	h, ok := se[task.Sector.ID.Number.String()]
 
 	if ok {
 		if task.TaskType.Short() == "FIN" && h == worker.Info.Hostname {
 			mutex.Lock()
+			defer mutex.Unlock()
 			delete(se, task.TaskType.Short())
 			log.Debugf("拉取文件中")
-			mutex.Unlock()
 
 			return true
 		}
@@ -102,11 +104,11 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 	}
 	if !ok && task.TaskType.Short() == "AP" {
 		mutex.Lock()
+		defer mutex.Unlock()
 
 		se[task.Sector.ID.Number.String()] = worker.Info.Hostname
 
 		log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
-		mutex.Unlock()
 
 		return true
 	}
