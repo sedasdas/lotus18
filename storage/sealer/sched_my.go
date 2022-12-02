@@ -96,7 +96,7 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		}
 
 	}
-	if !ok && task.TaskType.Short() == "AP" {
+	if !ok && task.TaskType.Short() == "AP" || h != "hcxj-10-0-1-185" {
 		scene.Store(task.Sector.ID.Number.String(), worker.Info.Hostname)
 		log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
 		return true
