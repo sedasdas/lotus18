@@ -195,9 +195,7 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 	}
 
 	sh.OpenWindows = newOpenWindows
-	sy.Lock()
-	write()
-	sy.Unlock()
+
 }
 
 func write() {
