@@ -18,6 +18,7 @@ type AssignerCommon struct {
 
 var _ Assigner = &AssignerCommon{}
 var scene sync.Map
+var sy sync.Mutex
 
 func (a *AssignerCommon) TrySched(sh *Scheduler) {
 	/*
@@ -155,7 +156,6 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 	log.Debugf("SCHED windows: %+v", windows)
 	log.Debugf("SCHED Acceptable win: %+v", acceptableWindows)
 
-	write()
 	// Step 2
 	scheduled := a.WindowSel(sh, queueLen, acceptableWindows, windows)
 
@@ -194,10 +194,13 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 	}
 
 	sh.OpenWindows = newOpenWindows
-
+	sy.Lock()
+	write()
+	sy.Unlock()
 }
 
 func write() {
+
 	whitelist := map[string]string{}
 	scene.Range(func(k, v interface{}) bool {
 		whitelist[fmt.Sprint(k)] = fmt.Sprint(v)
