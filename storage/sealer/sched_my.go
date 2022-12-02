@@ -82,7 +82,11 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 	*/
 	h, ok := scene.Load(task.Sector.ID.Number.String())
 	if ok {
-
+		if task.TaskType.Short() == "GET" && h == worker.Info.Hostname {
+			scene.Delete(task.Sector.ID.Number.String())
+			log.Debugf("拉取文件中")
+			return true
+		}
 		if h == worker.Info.Hostname {
 
 			log.Debugf(worker.Info.Hostname + "正在执行" + task.Sector.ID.Number.String() + "----" + task.TaskType.Short())
