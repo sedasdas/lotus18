@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/filecoin-project/lotus/storage/sealer/sealtasks"
 	"os"
 	"sync"
 )
@@ -103,10 +104,8 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 
 				//}
 				//SchedLocal(task,windowRequest)
-				if worker.Info.Hostname == "hcxj-10-0-1-185" {
-					continue
-				}
-				if !SchedLocal(task, windowRequest, worker) {
+
+				if task.TaskType != sealtasks.TTFetch && !SchedLocal(task, windowRequest, worker) {
 					continue
 				}
 				//needRes := worker.Info.Resources.ResourceSpec(task.Sector.ProofType, task.TaskType)
