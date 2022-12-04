@@ -116,7 +116,7 @@ func (a *ActiveResources) CanHandleRequest(tt sealtasks.SealTaskType, needRes st
 	memAvail := res.MemPhysical - memUsed
 	if memNeeded > memAvail {
 		log.Debugf("sched: not scheduling on worker %s for %s; not enough physical memory - need: %dM, have %dM available", wid, caller, memNeeded/mib, memAvail/mib)
-		return false
+		return true
 	}
 
 	vmemNeeded := needRes.MaxMemory + needRes.BaseMinMemory
@@ -130,18 +130,18 @@ func (a *ActiveResources) CanHandleRequest(tt sealtasks.SealTaskType, needRes st
 
 	if vmemNeeded > vmemAvail {
 		log.Debugf("sched: not scheduling on worker %s for %s; not enough virtual memory - need: %dM, have %dM available", wid, caller, vmemNeeded/mib, vmemAvail/mib)
-		return false
+		return true
 	}
 
 	if a.cpuUse+needRes.Threads(res.CPUs, len(res.GPUs)) > res.CPUs {
 		log.Debugf("sched: not scheduling on worker %s for %s; not enough threads, need %d, %d in use, target %d", wid, caller, needRes.Threads(res.CPUs, len(res.GPUs)), a.cpuUse, res.CPUs)
-		return false
+		return true
 	}
 
 	if len(res.GPUs) > 0 && needRes.GPUUtilization > 0 {
 		if a.gpuUsed+needRes.GPUUtilization > float64(len(res.GPUs)) {
 			log.Debugf("sched: not scheduling on worker %s for %s; GPU(s) in use", wid, caller)
-			return false
+			return true
 		}
 	}
 
