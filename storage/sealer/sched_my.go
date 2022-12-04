@@ -1,6 +1,8 @@
 package sealer
 
-import "sync"
+import (
+	"sync"
+)
 
 //type Local struct {
 //	ServerName string   `json:"serverName"`
@@ -100,7 +102,9 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 	if !ok && task.TaskType.Short() == "AP" && worker.Info.Hostname != "hcxj-10-0-1-185" {
 		scene.Store(task.Sector.ID.Number.String(), worker.Info.Hostname)
 		log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
+		mutex.Lock()
 		write()
+		mutex.Unlock()
 		return true
 	}
 
@@ -119,3 +123,5 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 	//}
 	return false
 }
+
+// 加锁操作
