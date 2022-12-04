@@ -439,6 +439,7 @@ func (sh *Scheduler) RemoveRequest(ctx context.Context, schedId uuid.UUID) error
 }
 
 func (sh *Scheduler) Close(ctx context.Context) error {
+	write()
 	close(sh.closing)
 	select {
 	case <-sh.closed:

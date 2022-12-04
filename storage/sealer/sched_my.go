@@ -103,8 +103,6 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		scene.Store(task.Sector.ID.Number.String(), worker.Info.Hostname)
 		log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
 
-		write()
-
 		return true
 	}
 

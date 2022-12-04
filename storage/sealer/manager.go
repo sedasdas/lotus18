@@ -142,6 +142,7 @@ func New(ctx context.Context, lstor *paths.Local, stor paths.Store, ls paths.Loc
 	read()
 	m.setupWorkTracker()
 	go m.sched.runSched()
+	write()
 
 	localTasks := []sealtasks.TaskType{
 		sealtasks.TTCommit1, sealtasks.TTProveReplicaUpdate1, sealtasks.TTFinalize, sealtasks.TTFetch, sealtasks.TTFinalizeReplicaUpdate,
