@@ -1,11 +1,8 @@
 package sealer
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"github.com/filecoin-project/lotus/storage/sealer/sealtasks"
-	"os"
 	"sync"
 )
 
@@ -192,57 +189,4 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 
 	sh.OpenWindows = newOpenWindows
 
-}
-
-func read() {
-	//os.ReadFile("/home/ts/json")
-	f, err := os.ReadFile("/home/ts/json")
-	if err != nil {
-		panic(err)
-	}
-
-	var tmpMap map[string]interface{}
-	if err := json.Unmarshal(f, &tmpMap); err != nil {
-		panic(err)
-	}
-	for key, value := range tmpMap {
-		scene.Store(key, value)
-	}
-	log.Debugf("读取完成")
-
-}
-
-func write() {
-	mutex.Lock()
-	/*
-
-		log.Debugf("LOCK")
-		whitelist := map[string]string{}
-		scene.Range(func(k, v interface{}) bool {
-			whitelist[fmt.Sprint(k)] = fmt.Sprint(v)
-			return true
-		})
-		fmt.Println("Done.")
-
-	*/
-	f, err := os.OpenFile("/home/ts/json", os.O_WRONLY|os.O_CREATE, 0666)
-
-	//syscall.Flock(int(f.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-	buf := new(bytes.Buffer)
-	err = json.NewEncoder(buf).Encode(scene)
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = f.Write([]byte(buf.Bytes()))
-	if err != nil {
-		panic(err)
-	}
-	//syscall.Flock(int(f.Fd()), syscall.LOCK_UN)
-	mutex.Unlock()
-	log.Debugf("UNLOCK")
 }

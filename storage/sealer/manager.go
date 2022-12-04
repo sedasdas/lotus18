@@ -1270,7 +1270,7 @@ func (m *Manager) RemoveSchedRequest(ctx context.Context, schedId uuid.UUID) err
 func (m *Manager) Close(ctx context.Context) error {
 	m.windowPoStSched.schedClose()
 	m.winningPoStSched.schedClose()
-	write()
+
 	return m.sched.Close(ctx)
 }
 
