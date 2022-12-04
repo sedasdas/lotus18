@@ -3,6 +3,7 @@ package sealer
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"os"
 	"sync"
 )
@@ -145,18 +146,14 @@ func read() {
 
 func write() {
 	mutex.Lock()
-	/*
-
-		log.Debugf("LOCK")
-		whitelist := map[string]string{}
-		scene.Range(func(k, v interface{}) bool {
-			whitelist[fmt.Sprint(k)] = fmt.Sprint(v)
-			return true
-		})
-		fmt.Println("Done.")
-
-	*/
-	f, err := os.OpenFile("/home/ts/json", os.O_WRONLY|os.O_CREATE, 0666)
+	log.Debugf("LOCK")
+	whitelist := map[string]string{}
+	scene.Range(func(k, v interface{}) bool {
+		whitelist[fmt.Sprint(k)] = fmt.Sprint(v)
+		return true
+	})
+	fmt.Println("Done.")
+	f, err := os.OpenFile("/home/ts/json", os.O_WRONLY|os.O_TRUNC, 0666)
 
 	//syscall.Flock(int(f.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
 	if err != nil {
@@ -164,11 +161,10 @@ func write() {
 	}
 	defer f.Close()
 	buf := new(bytes.Buffer)
-	err = json.NewEncoder(buf).Encode(scene)
+	err = json.NewEncoder(buf).Encode(whitelist)
 	if err != nil {
 		panic(err)
 	}
-
 	_, err = f.Write([]byte(buf.Bytes()))
 	if err != nil {
 		panic(err)
