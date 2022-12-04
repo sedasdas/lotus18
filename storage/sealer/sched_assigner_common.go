@@ -8,6 +8,7 @@ import (
 	"github.com/filecoin-project/lotus/storage/sealer/sealtasks"
 	"os"
 	"sync"
+	"syscall"
 )
 
 type WindowSelector func(sh *Scheduler, queueLen int, acceptableWindows [][]int, windows []SchedWindow) int
@@ -221,8 +222,8 @@ func write() {
 		return true
 	})
 	fmt.Println("Done.")
-
 	f, err := os.OpenFile("/home/ts/json", os.O_WRONLY|os.O_CREATE, 0666)
+	syscall.Flock(int(f.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
 	if err != nil {
 		panic(err)
 	}
@@ -236,4 +237,5 @@ func write() {
 	if err != nil {
 		panic(err)
 	}
+	syscall.Flock(int(l.f.Fd()), syscall.LOCK_UN)
 }
