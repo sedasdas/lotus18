@@ -133,13 +133,13 @@ func read() {
 		panic(err)
 	}
 
-	//var tmpMap map[string]interface{}
-	if err := json.Unmarshal(f, &scene); err != nil {
+	var tmpMap map[string]interface{}
+	if err := json.Unmarshal(f, &tmpMap); err != nil {
 		panic(err)
 	}
-	//for key, value := range tmpMap {
-	//	scene.Store(key, value)
-	//}
+	for key, value := range tmpMap {
+		scene.Store(key, value)
+	}
 	log.Debugf("读取完成")
 
 }
