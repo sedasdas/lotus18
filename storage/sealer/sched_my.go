@@ -80,6 +80,7 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		//se[task.Sector.ID.Number.String()] = worker.Info.Hostname
 	}
 	*/
+
 	h, ok := scene.Load(task.Sector.ID.Number.String())
 	if ok {
 		if task.TaskType.Short() == "FIN" && h == worker.Info.Hostname {

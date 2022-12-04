@@ -18,7 +18,6 @@ type AssignerCommon struct {
 }
 
 var _ Assigner = &AssignerCommon{}
-var scene sync.Map
 var sy sync.Mutex
 
 func (a *AssignerCommon) TrySched(sh *Scheduler) {
@@ -193,6 +192,24 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 	}
 
 	sh.OpenWindows = newOpenWindows
+
+}
+
+func read() {
+	//os.ReadFile("/home/ts/json")
+	f, err := os.ReadFile("/home/ts/json")
+	if err != nil {
+		panic(err)
+	}
+
+	var tmpMap map[string]interface{}
+	if err := json.Unmarshal(f, &tmpMap); err != nil {
+		panic(err)
+	}
+	for key, value := range tmpMap {
+		scene.Store(key, value)
+	}
+	log.Debugf("读取完成")
 
 }
 

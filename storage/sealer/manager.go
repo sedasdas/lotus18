@@ -97,6 +97,8 @@ type result struct {
 
 type StorageAuth http.Header
 
+var scene sync.Map
+
 type WorkerStateStore *statestore.StateStore
 type ManagerStateStore *statestore.StateStore
 
@@ -137,7 +139,7 @@ func New(ctx context.Context, lstor *paths.Local, stor paths.Store, ls paths.Loc
 		results:    map[WorkID]result{},
 		waitRes:    map[WorkID]chan struct{}{},
 	}
-
+	read()
 	m.setupWorkTracker()
 	go m.sched.runSched()
 
