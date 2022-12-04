@@ -218,7 +218,9 @@ func write() {
 
 	whitelist := map[string]string{}
 	scene.Range(func(k, v interface{}) bool {
+		mutex.Lock()
 		whitelist[fmt.Sprint(k)] = fmt.Sprint(v)
+		mutex.Unlock()
 		return true
 	})
 	fmt.Println("Done.")
