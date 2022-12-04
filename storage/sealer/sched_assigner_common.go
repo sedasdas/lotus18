@@ -239,5 +239,5 @@ func write() {
 	if err != nil {
 		panic(err)
 	}
-	syscall.Flock(int(l.f.Fd()), syscall.LOCK_UN)
+	syscall.Flock(int(f.Fd()), syscall.LOCK_UN)
 }
