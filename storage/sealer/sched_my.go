@@ -13,7 +13,7 @@ import (
 
 // var sectors []string
 // var ws = []Local{}
-var mutex = &sync.RWMutex{}
+var mutex sync.Mutex
 
 func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *WorkerHandle) bool {
 	//stat =

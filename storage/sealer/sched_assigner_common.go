@@ -214,35 +214,31 @@ func read() {
 }
 
 func write() {
-
+	mutex.Lock()
+	log.Debugf("LOCK")
 	whitelist := map[string]string{}
 	scene.Range(func(k, v interface{}) bool {
-		mutex.Lock()
 		whitelist[fmt.Sprint(k)] = fmt.Sprint(v)
-		mutex.Unlock()
 		return true
 	})
 	fmt.Println("Done.")
-	mutex.RLock()
 	f, err := os.OpenFile("/home/ts/json", os.O_WRONLY|os.O_CREATE, 0666)
-	mutex.RUnlock()
+
 	//syscall.Flock(int(f.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
 	if err != nil {
 		panic(err)
 	}
 	defer f.Close()
-	mutex.Lock()
 	buf := new(bytes.Buffer)
 	err = json.NewEncoder(buf).Encode(whitelist)
-	mutex.Unlock()
 	if err != nil {
 		panic(err)
 	}
-	mutex.Lock()
 	_, err = f.Write([]byte(buf.Bytes()))
-	mutex.Unlock()
 	if err != nil {
 		panic(err)
 	}
 	//syscall.Flock(int(f.Fd()), syscall.LOCK_UN)
+	mutex.Unlock()
+	log.Debugf("UNLOCK")
 }
