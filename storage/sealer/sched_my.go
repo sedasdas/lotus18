@@ -128,7 +128,7 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 
 func read() {
 	//os.ReadFile("/home/ts/json")
-	f, err := os.ReadFile("/home/ts/json")
+	f, err := os.ReadFile("~/lotusjson")
 	if err != nil {
 		panic(err)
 	}
