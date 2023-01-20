@@ -70,6 +70,7 @@ func SchedMy(task *WorkerRequest, worker *WorkerHandle) bool {
 		}
 		if worker.Info.Hostname != "miner" {
 			addWorkertoAllworkers(worker.Info.Hostname)
+			return true
 		}
 	}
 	return false
