@@ -71,7 +71,7 @@ func SchedMy(task *WorkerRequest, worker *WorkerHandle) bool {
 	if err := addWorkertoAllworkers(worker.Info.Hostname); err != nil {
 		return false
 	}
-	return true
+	return false
 }
 func addWorkertoAllworkers(name string) error {
 	lock.Lock()
