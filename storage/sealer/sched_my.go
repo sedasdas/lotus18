@@ -19,6 +19,7 @@ import (
 // var ws = []Local{}
 var mutex sync.Mutex
 var workerTaskCount = make(map[string]int)
+var someMapMutex = sync.RWMutex{}
 
 func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *WorkerHandle) bool {
 
@@ -30,7 +31,9 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 			return true
 		}
 		if h == worker.Info.Hostname {
+			someMapMutex.Lock()
 			assignTask(worker.Info.Hostname)
+			someMapMutex.Unlock()
 			log.Debugf(worker.Info.Hostname + "正在执行" + task.Sector.ID.Number.String() + "----" + task.TaskType.Short())
 
 			return true
@@ -39,6 +42,7 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 
 	}
 	if !ok && task.TaskType.Short() == "AP" && worker.Info.Hostname != "miner" {
+
 		assignTask(worker.Info.Hostname)
 		scene.Store(task.Sector.ID.Number.String(), worker.Info.Hostname)
 		log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
@@ -54,7 +58,9 @@ func assignTask(worker string) bool {
 		return false
 	}
 	// assign task to worker
+	someMapMutex.RLock()
 	workerTaskCount[worker]++
+	someMapMutex.RUnlock()
 	log.Debugf("Worker %s tasks is  ", worker, workerTaskCount[worker])
 	return true
 }
