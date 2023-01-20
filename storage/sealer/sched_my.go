@@ -31,9 +31,8 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 			return true
 		}
 		if h == worker.Info.Hostname {
-			someMapMutex.Lock()
 			assignTask(worker.Info.Hostname)
-			someMapMutex.Unlock()
+
 			log.Debugf(worker.Info.Hostname + "正在执行" + task.Sector.ID.Number.String() + "----" + task.TaskType.Short())
 
 			return true
@@ -58,9 +57,9 @@ func assignTask(worker string) bool {
 		return false
 	}
 	// assign task to worker
-	someMapMutex.RLock()
+	someMapMutex.Lock()
 	workerTaskCount[worker]++
-	someMapMutex.RUnlock()
+	someMapMutex.Unlock()
 	log.Debugf("Worker %s tasks is  ", worker, workerTaskCount[worker])
 	return true
 }
