@@ -14,25 +14,8 @@ type AssignerCommon struct {
 }
 
 var _ Assigner = &AssignerCommon{}
-var sy sync.Mutex
 
 func (a *AssignerCommon) TrySched(sh *Scheduler) {
-	/*
-		This assigns tasks to workers based on:
-		- Task priority (achieved by handling sh.SchedQueue in order, since it's already sorted by priority)
-		- Worker resource availability
-		- Task-specified worker preference (acceptableWindows array below sorted by this preference)
-		- Window request age
-
-		1. For each task in the SchedQueue find windows which can handle them
-		1.1. Create list of windows capable of handling a task
-		1.2. Sort windows according to task selector preferences
-		2. Going through SchedQueue again, assign task to first acceptable window
-		   with resources available
-		3. Submit windows with scheduled tasks to workers
-
-	*/
-
 	windowsLen := len(sh.OpenWindows)
 	queueLen := sh.SchedQueue.Len()
 
@@ -82,33 +65,11 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 					continue
 				}
 
-				//ok, preferred, err := task.Sel.Ok(task.Ctx, task.TaskType, task.Sector.ProofType, worker)
-				//if err != nil || !ok || !preferred {
-				//	continue
-				//}
-				//ws := sh.Workers
-				//if task.TaskType == sealtasks.TTPreCommit1 || task.TaskType == sealtasks.TTPreCommit2 || task.TaskType == sealtasks.TTCommit1 {
-				//	log.Debug(task.TaskType)
-				//	continue
-				//}
-				//if task.TaskType != sealtasks.TTFetch {
-				//	if isExist := task.Sel.FindDataWoker(task.Ctx, task.TaskType, task.Sector.ID, task.Sector.ProofType, worker); !isExist {
-				//		continue
-				//	}
-				//	continue
-
-				//}
-				//SchedLocal(task,windowRequest)
-
 				if task.TaskType != sealtasks.TTFetch && !SchedLocal(task, windowRequest, worker) {
 					continue
 				}
-				//needRes := worker.Info.Resources.ResourceSpec(task.Sector.ProofType, task.TaskType)
 
 				// TODO: allow bigger windows
-				//if !windows[wnd].Allocated.CanHandleRequest(task.SealTask(), needRes, windowRequest.Worker, "schedAcceptable", worker.Info) {
-				//	continue
-				//}
 
 				rpcCtx, cancel := context.WithTimeout(task.Ctx, SelectorTimeout)
 
