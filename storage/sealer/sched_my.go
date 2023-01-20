@@ -30,7 +30,7 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 			return true
 		}
 		if h == worker.Info.Hostname {
-			assignTask(worker.Info.Hostname, task)
+			assignTask(worker.Info.Hostname)
 			log.Debugf(worker.Info.Hostname + "正在执行" + task.Sector.ID.Number.String() + "----" + task.TaskType.Short())
 
 			return true
@@ -39,7 +39,7 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 
 	}
 	if !ok && task.TaskType.Short() == "AP" && worker.Info.Hostname != "miner" {
-		assignTask(worker.Info.Hostname, task)
+		assignTask(worker.Info.Hostname)
 		scene.Store(task.Sector.ID.Number.String(), worker.Info.Hostname)
 		log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
 		write()
@@ -48,7 +48,7 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 
 	return false
 }
-func assignTask(worker string, task *WorkerRequest) bool {
+func assignTask(worker string) bool {
 	if workerTaskCount[worker] >= 4 {
 		log.Debugf("Worker %s already has 4 tasks, cannot assign more", worker)
 		return false
