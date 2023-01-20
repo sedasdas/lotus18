@@ -48,13 +48,14 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 
 	return false
 }
-func assignTask(worker string, task *WorkerRequest) {
+func assignTask(worker string, task *WorkerRequest) bool {
 	if workerTaskCount[worker] >= 4 {
 		log.Debugf("Worker %s already has 4 tasks, cannot assign more", worker)
-		return
+		return false
 	}
 	// assign task to worker
 	workerTaskCount[worker]++
+	return true
 }
 func read() {
 	//os.ReadFile("/home/ts/json")
