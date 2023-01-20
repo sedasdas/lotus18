@@ -103,5 +103,5 @@ func write() {
 	}
 	//syscall.Flock(int(f.Fd()), syscall.LOCK_UN)
 	mutex.Unlock()
-	log.Debugf("UNLOCK")
+	log.Debugf("写入文件")
 }
