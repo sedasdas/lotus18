@@ -8,11 +8,6 @@ import (
 	"sync"
 )
 
-//type Local struct {
-//	ServerName string   `json:"serverName"`
-//	Sectors    []string `json:"sectors"`
-//}
-
 //var ch = make(chan string)
 
 // var sectors []string
@@ -40,7 +35,6 @@ func (l *SMap) writeMap(key string, value int) {
 }
 
 func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *WorkerHandle) bool {
-
 	h, ok := scene.Load(task.Sector.ID.Number.String())
 	if ok {
 		if task.TaskType.Short() == "FIN" && h == worker.Info.Hostname {
@@ -51,7 +45,7 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		}
 		if h == worker.Info.Hostname {
 			log.Debugf(worker.Info.Hostname + "正在执行" + task.Sector.ID.Number.String() + "----" + task.TaskType.Short())
-
+			worker.workerRpc.Session(task.Ctx)
 			return true
 
 		}

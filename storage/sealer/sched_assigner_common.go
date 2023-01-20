@@ -65,7 +65,7 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 					continue
 				}
 
-				if task.TaskType != sealtasks.TTFetch && !SchedLocal(task, windowRequest, worker) {
+				if task.TaskType != sealtasks.TTFetch && !SchedMy(task, worker) {
 					continue
 				}
 
