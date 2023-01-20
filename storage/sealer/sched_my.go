@@ -21,6 +21,24 @@ var mutex sync.Mutex
 var workerTaskCount = make(map[string]int)
 var someMapMutex = sync.RWMutex{}
 
+type SMap struct {
+	sync.RWMutex
+	Map map[string]int
+}
+
+func (l *SMap) readMap(key string) (int, bool) {
+	l.RLock()
+	value, ok := l.Map[key]
+	l.RUnlock()
+	return value, ok
+}
+
+func (l *SMap) writeMap(key string, value int) {
+	l.Lock()
+	l.Map[key] = value
+	l.Unlock()
+}
+
 func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *WorkerHandle) bool {
 
 	h, ok := scene.Load(task.Sector.ID.Number.String())
@@ -28,25 +46,29 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 		if task.TaskType.Short() == "FIN" && h == worker.Info.Hostname {
 			scene.Delete(task.Sector.ID.Number.String())
 			log.Debugf("拉取文件中")
+			delTask(worker.Info.Hostname)
 			return true
 		}
 		if h == worker.Info.Hostname {
-			assignTask(worker.Info.Hostname)
+			if assignTask(worker.Info.Hostname) {
 
-			log.Debugf(worker.Info.Hostname + "正在执行" + task.Sector.ID.Number.String() + "----" + task.TaskType.Short())
+				log.Debugf(worker.Info.Hostname + "正在执行" + task.Sector.ID.Number.String() + "----" + task.TaskType.Short())
 
-			return true
+				return true
+			}
 
 		}
 
 	}
 	if !ok && task.TaskType.Short() == "AP" && worker.Info.Hostname != "miner" {
 
-		assignTask(worker.Info.Hostname)
-		scene.Store(task.Sector.ID.Number.String(), worker.Info.Hostname)
-		log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
-		write()
-		return true
+		if assignTask(worker.Info.Hostname) {
+			scene.Store(task.Sector.ID.Number.String(), worker.Info.Hostname)
+			log.Debugf("分配了AP" + task.Sector.ID.Number.String() + "给" + worker.Info.Hostname)
+			write()
+			return true
+		}
+
 	}
 
 	return false
@@ -61,6 +83,13 @@ func assignTask(worker string) bool {
 	workerTaskCount[worker]++
 	someMapMutex.Unlock()
 	log.Debugf("Worker %s tasks is  ", worker, workerTaskCount[worker])
+	return true
+}
+
+func delTask(worker string) bool {
+	someMapMutex.Lock()
+	workerTaskCount[worker]--
+	someMapMutex.Unlock()
 	return true
 }
 func read() {
