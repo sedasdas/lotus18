@@ -30,7 +30,7 @@ func SchedLocal(task *WorkerRequest, request *SchedWindowRequest, worker *Worker
 			return true
 		}
 		if h == worker.Info.Hostname {
-
+			assignTask(worker.Info.Hostname, task)
 			log.Debugf(worker.Info.Hostname + "正在执行" + task.Sector.ID.Number.String() + "----" + task.TaskType.Short())
 
 			return true
@@ -84,7 +84,7 @@ func write() {
 		return true
 	})
 	fmt.Println("Done.")
-	f, err := os.OpenFile("/home/ts/json", os.O_WRONLY|os.O_TRUNC, 0666)
+	f, err := os.OpenFile("/var/tmp/lotusjson", os.O_WRONLY|os.O_TRUNC, 0666)
 
 	//syscall.Flock(int(f.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
 	if err != nil {
