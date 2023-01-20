@@ -55,6 +55,7 @@ func assignTask(worker string, task *WorkerRequest) bool {
 	}
 	// assign task to worker
 	workerTaskCount[worker]++
+	log.Debugf("Worker %s tasks is  ", worker, workerTaskCount[worker])
 	return true
 }
 func read() {
