@@ -49,6 +49,7 @@ func (myw *MyWorker) getTaskListLen() int {
 
 func SchedMy(task *WorkerRequest, worker *WorkerHandle) bool {
 	taskid := task.Sector.ID.Number.String()
+	log.Debugf("taskid is %s woker", taskid, worker.Info.Hostname)
 	for _, w := range allworkers {
 		if w.getWorker() == worker.Info.Hostname {
 			if status, _ := w.getTask(taskid); status == "FIN" {
