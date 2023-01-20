@@ -60,7 +60,7 @@ func assignTask(worker string) bool {
 }
 func read() {
 	//os.ReadFile("/home/ts/json")
-	f, err := os.ReadFile("/var/tmp/lotusjson")
+	f, err := os.ReadFile("/home/cali/lotusjson")
 	if err != nil {
 		panic(err)
 	}
@@ -85,7 +85,7 @@ func write() {
 		return true
 	})
 	fmt.Println("Done.")
-	f, err := os.OpenFile("/var/tmp/lotusjson", os.O_WRONLY|os.O_TRUNC, 0666)
+	f, err := os.OpenFile("/home/cali/lotusjson", os.O_WRONLY|os.O_TRUNC, 0666)
 
 	//syscall.Flock(int(f.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
 	if err != nil {
