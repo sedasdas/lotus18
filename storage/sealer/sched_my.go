@@ -58,7 +58,7 @@ func assignTask(worker string, task *WorkerRequest) {
 }
 func read() {
 	//os.ReadFile("/home/ts/json")
-	f, err := os.ReadFile("/home/ps/lotusjson")
+	f, err := os.ReadFile("/var/tmp/lotusjson")
 	if err != nil {
 		panic(err)
 	}
