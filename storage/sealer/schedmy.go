@@ -47,31 +47,31 @@ func (myw *MyWorker) getTaskListLen() int {
 	return length
 }
 
-func SchedMy(task *WorkerRequest, worker *WorkerHandle) (bool, error) {
+func SchedMy(task *WorkerRequest, worker *WorkerHandle) bool {
 	taskid := task.Sector.ID.Number.String()
 	for _, w := range allworkers {
 		if w.getWorker() == worker.Info.Hostname {
 			if status, _ := w.getTask(taskid); status == "FIN" {
 				if err := w.delTask(taskid); err != nil {
-					return false, err
+					return false
 				}
-				return true, nil
+				return true
 			}
 			if w.getTaskListLen() < 4 && worker.Info.Hostname != "miner" {
 				if err := w.addTask(taskid, task.TaskType.Short(), worker.Info.Hostname); err != nil {
 
-					return false, err
+					return false
 				}
 				log.Debugf("add task %s to worker %s do   %s", taskid, worker.Info.Hostname, task.TaskType.Short())
-				return true, nil
+				return true
 			}
-			return true, nil
+			return true
 		}
 	}
 	if err := addWorkertoAllworkers(worker.Info.Hostname); err != nil {
-		return false, err
+		return false
 	}
-	return true, nil
+	return true
 }
 func addWorkertoAllworkers(name string) error {
 	lock.Lock()
