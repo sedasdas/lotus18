@@ -1,79 +1,86 @@
 package sealer
 
 import (
+	"fmt"
 	"sync"
 )
 
 var lock sync.Mutex
 
 type MyWorker struct {
-	tasklist (map[string]string) `json:"tasklist"`
-	name     string              `json:"name"`
-	sync.RWMutex
+	tasklist sync.Map
+	name     string `json:"name"`
 }
 
 var allworkers = []MyWorker{}
 
-func (myw *MyWorker) addTask(taskid string, status string, worker string) {
-	myw.Lock()
-	myw.tasklist[taskid] = status
-	myw.Unlock()
+func (myw *MyWorker) addTask(taskid string, status string, worker string) error {
+	if _, loaded := myw.tasklist.LoadOrStore(taskid, status); loaded {
+		return fmt.Errorf("task with id %s already exists", taskid)
+	}
 	myw.name = worker
+	return nil
 }
-func (myw *MyWorker) delTask(taskid string) {
-	myw.Lock()
-	delete(myw.tasklist, taskid)
-	myw.Unlock()
+func (myw *MyWorker) delTask(taskid string) error {
+	if _, ok := myw.tasklist.Load(taskid); !ok {
+		return fmt.Errorf("task with id %s not found", taskid)
+	}
+	myw.tasklist.Delete(taskid)
+	return nil
 }
-func (myw *MyWorker) getTask(taskid string) string {
-	myw.RLock()
-	value := myw.tasklist[taskid]
-	myw.RUnlock()
-	return value
+func (myw *MyWorker) getTask(taskid string) (string, error) {
+	if value, ok := myw.tasklist.Load(taskid); !ok {
+		return "", fmt.Errorf("task with id %s not found", taskid)
+	} else {
+		return value.(string), nil
+	}
 }
 func (myw *MyWorker) getWorker() string {
 	return myw.name
 }
-func (myw *MyWorker) getTaskList() map[string]string {
-	return myw.tasklist
-}
 func (myw *MyWorker) getTaskListLen() int {
-	return len(myw.tasklist)
+	var length int
+	myw.tasklist.Range(func(_, _ interface{}) bool {
+		length++
+		return true
+	})
+	return length
 }
 
-func SchedMy(task *WorkerRequest, worker *WorkerHandle) bool {
+func SchedMy(task *WorkerRequest, worker *WorkerHandle) (bool, error) {
+	taskid := task.Sector.ID.Number.String()
 	for _, w := range allworkers {
 		if w.getWorker() == worker.Info.Hostname {
-			if w.getTask(task.Sector.ID.Number.String()) == "FIN" {
-				w.delTask(task.Sector.ID.Number.String())
-				return true
+			if status, _ := w.getTask(taskid); status == "FIN" {
+				if err := w.delTask(taskid); err != nil {
+					return false, err
+				}
+				return true, nil
 			}
 			if w.getTaskListLen() < 4 && worker.Info.Hostname != "miner" {
-				w.addTask(task.Sector.ID.Number.String(), task.TaskType.Short(), worker.Info.Hostname)
-
-				return true
+				if err := w.addTask(taskid, task.TaskType.Short(), worker.Info.Hostname); err != nil {
+					return false, err
+				}
+				return true, nil
 			}
-			return true
+			return true, nil
 		}
 	}
-	addWorkertoAllworkers(worker.Info.Hostname, task)
-	return true
+	if err := addWorkertoAllworkers(worker.Info.Hostname, task); err != nil {
+		return false, err
+	}
+	return true, nil
 }
-func addWorkertoAllworkers(name string, task *WorkerRequest) {
+func addWorkertoAllworkers(name string, task *WorkerRequest) error {
 	lock.Lock()
 	defer lock.Unlock()
 	wok := &MyWorker{
-		tasklist: make(map[string]string),
+		tasklist: sync.Map{},
+		name:     name,
 	}
-	wok.name = name
-	wok.tasklist[task.Sector.ID.Number.String()] = task.TaskType.Short()
+	wok.tasklist.Store(task.Sector.ID.Number.String(), task.TaskType.Short())
+	log.Debugf("分配了" + task.Sector.ID.Number.String() + task.TaskType.Short() + "给" + name)
 	allworkers = append(allworkers, *wok)
-}
-
-func (myw MyWorker) delWorkertoAllworkers() {
-	for i, w := range allworkers {
-		if w.getWorker() == myw.getWorker() {
-			allworkers = append(allworkers[:i], allworkers[i+1:]...)
-		}
-	}
+	log.Debugf("add worker %s to allworkers", name)
+	return nil
 }
