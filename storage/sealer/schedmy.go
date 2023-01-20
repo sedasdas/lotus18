@@ -59,27 +59,27 @@ func SchedMy(task *WorkerRequest, worker *WorkerHandle) (bool, error) {
 			}
 			if w.getTaskListLen() < 4 && worker.Info.Hostname != "miner" {
 				if err := w.addTask(taskid, task.TaskType.Short(), worker.Info.Hostname); err != nil {
+
 					return false, err
 				}
+				log.Debugf("add task %s to worker %s do   %s", taskid, worker.Info.Hostname, task.TaskType.Short())
 				return true, nil
 			}
 			return true, nil
 		}
 	}
-	if err := addWorkertoAllworkers(worker.Info.Hostname, task); err != nil {
+	if err := addWorkertoAllworkers(worker.Info.Hostname); err != nil {
 		return false, err
 	}
 	return true, nil
 }
-func addWorkertoAllworkers(name string, task *WorkerRequest) error {
+func addWorkertoAllworkers(name string) error {
 	lock.Lock()
 	defer lock.Unlock()
 	wok := &MyWorker{
 		tasklist: sync.Map{},
 		name:     name,
 	}
-	wok.tasklist.Store(task.Sector.ID.Number.String(), task.TaskType.Short())
-	log.Debugf("分配了" + task.Sector.ID.Number.String() + task.TaskType.Short() + "给" + name)
 	allworkers = append(allworkers, *wok)
 	log.Debugf("add worker %s to allworkers", name)
 	return nil
