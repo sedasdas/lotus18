@@ -50,27 +50,27 @@ func (myw *MyWorker) getTaskListLen() int {
 func SchedMy(task *WorkerRequest, worker *WorkerHandle) bool {
 	taskid := task.Sector.ID.Number.String()
 	log.Debugf("taskid is %s woker", taskid, worker.Info.Hostname)
-	for _, w := range allworkers {
-		if w.getWorker() == worker.Info.Hostname {
-			if status, _ := w.getTask(taskid); status == "FIN" {
-				if err := w.delTask(taskid); err != nil {
-					return false
+	if worker.Info.Hostname != "miner" {
+		findWorkertoAllworkers(worker.Info.Hostname)
+		for _, w := range allworkers {
+			if w.getWorker() == worker.Info.Hostname {
+				if status, _ := w.getTask(taskid); status == "FIN" {
+					if err := w.delTask(taskid); err != nil {
+						return false
+					}
+					return true
 				}
-				return true
-			}
-			if w.getTaskListLen() < 4 && worker.Info.Hostname != "miner" {
-				if err := w.addTask(taskid, task.TaskType.Short(), worker.Info.Hostname); err != nil {
+				if w.getTaskListLen() < 4 && worker.Info.Hostname != "miner" {
+					if err := w.addTask(taskid, task.TaskType.Short(), worker.Info.Hostname); err != nil {
 
-					return false
+						return false
+					}
+					log.Debugf("add task %s to worker %s do   %s", taskid, worker.Info.Hostname, task.TaskType.Short())
+					return true
 				}
-				log.Debugf("add task %s to worker %s do   %s", taskid, worker.Info.Hostname, task.TaskType.Short())
 				return true
 			}
-			return true
-		}
-		if worker.Info.Hostname != "miner" {
-			addWorkertoAllworkers(worker.Info.Hostname)
-			return true
+
 		}
 	}
 	return false
@@ -85,4 +85,14 @@ func addWorkertoAllworkers(name string) error {
 	allworkers = append(allworkers, *wok)
 	log.Debugf("add worker %s to allworkers", name)
 	return nil
+}
+func findWorkertoAllworkers(wname string) {
+	lock.Lock()
+	defer lock.Unlock()
+	for _, w := range allworkers {
+		if w.getWorker() == wname {
+			log.Debugf("find worker %s in allworkers", wname)
+		}
+	}
+	addWorkertoAllworkers(wname)
 }
