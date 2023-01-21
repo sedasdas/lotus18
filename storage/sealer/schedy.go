@@ -34,12 +34,12 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 			return true
 		}
 		if _, ok := alls[workername].Tasklist[taskid]; ok {
-			if alls[workername].Tasklist[taskid] == "FIN" {
-				delete(alls[workername].Tasklist, taskid)
-				return true
-			}
 			alls[workername].Tasklist[taskid] = tasktype
 			log.Debugf("update tasktype is %s woker", taskid, workername, tasktype)
+			if alls[workername].Tasklist[taskid] == "FIN" {
+				delete(alls[workername].Tasklist, taskid)
+				log.Debugf("delete taskid for %s woker", taskid, workername)
+			}
 			return true
 		}
 	}
