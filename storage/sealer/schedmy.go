@@ -91,6 +91,7 @@ func findWorkertoAllworkers(wname string) {
 	for _, w := range allworkers {
 		if w.getWorker() == wname {
 			log.Debugf("find worker %s in allworkers", wname)
+			return
 		}
 	}
 	addWorkertoAllworkers(wname)
