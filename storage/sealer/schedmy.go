@@ -1,7 +1,9 @@
 package sealer
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 	"sync"
 )
 
@@ -95,4 +97,27 @@ func findWorkertoAllworkers(wname string) {
 		}
 	}
 	addWorkertoAllworkers(wname)
+}
+func writeAllworkersToJson() error {
+	file, _ := os.Create("workers.json")
+	defer file.Close()
+
+	// convert the struct to JSON
+	data, _ := json.Marshal(allworkers)
+
+	// write the JSON data to the file
+	_, _ = file.Write(data)
+	return nil
+}
+func readAllworkersFromJson() ([]MyWorker, error) {
+	file, _ := os.Open("workers.json")
+	defer file.Close()
+
+	// read the JSON data from the file
+	data, _ := os.ReadFile("workers.json")
+
+	// convert the JSON data to a struct
+	var alwos []MyWorker
+	_ = json.Unmarshal(data, &alwos)
+	return alwos, nil
 }
