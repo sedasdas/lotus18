@@ -47,8 +47,8 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 	return false
 }
 func wAllworkersToJson() error {
-	lock.Lock()
-	defer lock.Unlock()
+	lck.Lock()
+	defer lck.Unlock()
 	file, _ := os.OpenFile(".workers.json", os.O_WRONLY|os.O_TRUNC, 0666)
 	defer file.Close()
 	log.Debugf("write allworkers to .workers.json", alls)
