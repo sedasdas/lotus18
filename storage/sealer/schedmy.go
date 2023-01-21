@@ -75,6 +75,7 @@ func SchedMy(task *WorkerRequest, worker *WorkerHandle) bool {
 
 		}
 	}
+	writeAllworkersToJson()
 	return false
 }
 func addWorkertoAllworkers(name string) error {
