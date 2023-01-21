@@ -42,7 +42,10 @@ func (myw *MyWorker) getTaskStatus(taskid string) string {
 	}
 	return ""
 }
+func (myw *MyWorker) updateTaskStatus(taskid string, status string) {
+	myw.Tasklist[taskid] = status
 
+}
 func (myw *MyWorker) getWorker() string {
 	return myw.Name
 }
@@ -55,7 +58,7 @@ func SchedMy(task *WorkerRequest, worker *WorkerHandle) bool {
 	log.Debugf("taskid is %s woker", taskid, worker.Info.Hostname)
 	if worker.Info.Hostname != "miner" {
 		findWorkertoAllworkers(worker.Info.Hostname)
-		for i, w := range allworkers {
+		for _, w := range allworkers {
 			if w.getWorker() == worker.Info.Hostname {
 				if status := w.getTaskStatus(taskid); status == "FIN" {
 					if err := w.delTask(taskid); err != nil {
@@ -63,18 +66,13 @@ func SchedMy(task *WorkerRequest, worker *WorkerHandle) bool {
 					}
 					return true
 				}
-				if w.getTaskListLen() < 4 && worker.Info.Hostname != "miner" {
-
-					if err := allworkers[i].addTask(taskid, task.TaskType.Short(), worker.Info.Hostname); err != nil {
-
-						return false
-					}
+				if w.getTaskListLen() < 4 {
 					log.Debugf("add task %s to worker %s do   %s", taskid, worker.Info.Hostname, task.TaskType.Short())
 					return true
 				}
 				if w.getTask(taskid) == taskid {
-					log.Debugf("task %s is already in worker %s", taskid, worker.Info.Hostname)
-					return true
+					w.updateTaskStatus(taskid, task.TaskType.Short())
+					log.Debugf("update task %s to worker %s do   %s", taskid, worker.Info.Hostname, task.TaskType.Short())
 				}
 				log.Debugf("worker %s is busy tasklen is  %s  ", worker.Info.Hostname, w.getTaskListLen())
 				return false
