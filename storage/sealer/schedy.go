@@ -25,17 +25,17 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 	if worker.Info.Hostname != "miner" {
 		if _, ok := alls[workername]; !ok {
 			alls[workername] = Tasks{Tasklist: make(map[string]string)}
-			log.Debugf("add new worker %s", alls[workername])
+			log.Debugf("add new worker %s", alls)
 		}
 
-		if tasktype == "AP" && len(all[workername].Tasklist) < 5 {
-			all[workername].Tasklist[taskid] = tasktype
+		if tasktype == "AP" && len(alls[workername].Tasklist) < 5 {
+			alls[workername].Tasklist[taskid] = tasktype
 			log.Debugf("add taskid for %s woker", taskid, workername)
 			return true
 		}
 		if _, ok := alls[workername].Tasklist[taskid]; ok {
-			if all[workername].Tasklist[taskid] == "FIN" {
-				delete(all[workername].Tasklist, taskid)
+			if alls[workername].Tasklist[taskid] == "FIN" {
+				delete(alls[workername].Tasklist, taskid)
 				return true
 			}
 			alls[workername].Tasklist[taskid] = tasktype
