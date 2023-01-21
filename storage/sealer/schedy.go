@@ -36,8 +36,6 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 		}
 		if tasktype == "PC1" && alls[workername].P1Count < 4 {
 			alls[workername].Tasklist[taskid] = tasktype
-			lck.Lock()
-			defer lck.Unlock()
 			alls[workername].P1Count++
 			log.Debugf("add taskid for %s woker", taskid, workername)
 			return true
@@ -46,8 +44,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 			alls[workername].Tasklist[taskid] = tasktype
 			log.Debugf("update tasktype is %s woker", taskid, workername, tasktype)
 			if alls[workername].Tasklist[taskid] == "PC2" {
-				lck.Lock()
-				defer lck.Unlock()
+
 				alls[workername].P1Count--
 				delete(alls[workername].Tasklist, taskid)
 				log.Debugf("delete taskid for %s woker", taskid, workername)
