@@ -139,7 +139,7 @@ func New(ctx context.Context, lstor *paths.Local, stor paths.Store, ls paths.Loc
 		results:    map[WorkID]result{},
 		waitRes:    map[WorkID]chan struct{}{},
 	}
-	readAllworkersFromJson()
+	rAllworkersFromJson()
 	m.setupWorkTracker()
 	go m.sched.runSched()
 
@@ -1268,7 +1268,7 @@ func (m *Manager) RemoveSchedRequest(ctx context.Context, schedId uuid.UUID) err
 }
 
 func (m *Manager) Close(ctx context.Context) error {
-	writeAllworkersToJson()
+	wAllworkersToJson()
 	m.windowPoStSched.schedClose()
 	m.winningPoStSched.schedClose()
 

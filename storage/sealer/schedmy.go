@@ -15,6 +15,7 @@ type MyWorker struct {
 	Name     string            `json:"name"`
 }
 
+var all = make(map[string]MyWorker)
 var allworkers = []MyWorker{}
 
 func (myw *MyWorker) addTask(taskid string, status string, worker string) {
