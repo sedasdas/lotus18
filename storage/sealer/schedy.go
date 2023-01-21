@@ -23,10 +23,11 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 	lck.Lock()
 	defer lck.Unlock()
 	if worker.Info.Hostname != "miner" {
-		if _, ok := all[workername]; !ok {
+		if _, ok := alls[workername]; !ok {
 			alls[workername] = Tasks{Tasklist: make(map[string]string)}
 			log.Debugf("add new worker %s", alls[workername])
 		}
+
 		if tasktype == "AP" && len(all[workername].Tasklist) < 5 {
 			all[workername].Tasklist[taskid] = tasktype
 			log.Debugf("add taskid for %s woker", taskid, workername)
