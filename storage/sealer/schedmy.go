@@ -65,7 +65,7 @@ func SchedMy(task *WorkerRequest, worker *WorkerHandle) bool {
 					}
 					return true
 				}
-				if w.getTaskListLen() < 4 {
+				if w.getTaskListLen() < 4 && task.TaskType.Short() == "AP" {
 					w.addTask(taskid, task.TaskType.Short(), worker.Info.Hostname)
 					allworkers[i] = w
 					log.Debugf("add task %s to worker %s do   %s", taskid, worker.Info.Hostname, task.TaskType.Short())
