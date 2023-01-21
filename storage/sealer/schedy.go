@@ -21,7 +21,7 @@ func (t *Tasks) getTaskCountPc1(status string) int {
 			p1c++
 		}
 	}
-
+	log.Debugf("getTaskCountPc1 is %s ", p1c)
 	return p1c
 
 }
