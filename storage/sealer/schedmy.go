@@ -65,7 +65,7 @@ func SchedMy(task *WorkerRequest, worker *WorkerHandle) bool {
 					}
 					return true
 				}
-				if w.getTaskListLen() < 4 && task.TaskType.Short() == "AP" {
+				if w.getTaskListLen() < 7 && task.TaskType.Short() == "AP" {
 					lock.Lock()
 					defer lock.Unlock()
 					w.addTask(taskid, task.TaskType.Short(), worker.Info.Hostname)
@@ -79,6 +79,7 @@ func SchedMy(task *WorkerRequest, worker *WorkerHandle) bool {
 					w.updateTaskStatus(taskid, task.TaskType.Short())
 					allworkers[i] = w
 					log.Debugf("update task %s to worker %s do   %s", taskid, worker.Info.Hostname, task.TaskType.Short())
+					return true
 				}
 				log.Debugf("worker %s is busy tasklen is  %s  ", worker.Info.Hostname, w.getTaskListLen())
 				return false
