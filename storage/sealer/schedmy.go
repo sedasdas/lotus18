@@ -31,13 +31,15 @@ func (myw *MyWorker) delTask(taskid string) error {
 	myw.tasklist.Delete(taskid)
 	return nil
 }
-func (myw *MyWorker) getTask(taskid string) (string, error) {
-	if value, ok := myw.tasklist.Load(taskid); !ok {
-		return "", fmt.Errorf("task with id %s not found", taskid)
-	} else {
-		return value.(string), nil
+func (myw *MyWorker) getTask(taskid string) (string, string) {
+	if status, ok := myw.tasklist.Load(taskid); ok {
+		log.Debugf("task %s  founed", taskid)
+		return taskid, status.(string)
 	}
+	return "", ""
+
 }
+
 func (myw *MyWorker) getWorker() string {
 	return myw.name
 }
@@ -57,7 +59,7 @@ func SchedMy(task *WorkerRequest, worker *WorkerHandle) bool {
 		findWorkertoAllworkers(worker.Info.Hostname)
 		for i, w := range allworkers {
 			if w.getWorker() == worker.Info.Hostname {
-				if status, _ := w.getTask(taskid); status == "FIN" {
+				if _, status := w.getTask(taskid); status == "FIN" {
 					if err := w.delTask(taskid); err != nil {
 						return false
 					}
