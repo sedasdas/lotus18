@@ -105,6 +105,7 @@ func writeAllworkersToJson() error {
 	defer lock.Unlock()
 	file, _ := os.Create(".workers.json")
 	defer file.Close()
+	log.Debugf("write allworkers to .workers.json", allworkers)
 	buf := new(bytes.Buffer)
 	err := json.NewEncoder(buf).Encode(allworkers)
 	if err != nil {
@@ -124,5 +125,6 @@ func readAllworkersFromJson() ([]MyWorker, error) {
 	if err := json.Unmarshal(file, &allworkers); err != nil {
 		panic(err)
 	}
+	log.Debugf("read allworkers from .workers.json", allworkers)
 	return allworkers, nil
 }
