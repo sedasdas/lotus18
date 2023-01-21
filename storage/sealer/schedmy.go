@@ -72,8 +72,8 @@ func SchedMy(task *WorkerRequest, worker *WorkerHandle) bool {
 					log.Debugf("add task %s to worker %s do   %s", taskid, worker.Info.Hostname, task.TaskType.Short())
 					return true
 				}
-				allworkers[i].addTask(taskid, task.TaskType.Short(), worker.Info.Hostname)
-				return true
+				log.Debugf("worker %s is busy tasklen is  %s  ", worker.Info.Hostname, w.getTaskListLen())
+				return false
 			}
 
 		}
