@@ -66,12 +66,16 @@ func SchedMy(task *WorkerRequest, worker *WorkerHandle) bool {
 					return true
 				}
 				if w.getTaskListLen() < 4 && task.TaskType.Short() == "AP" {
+					lock.Lock()
+					defer lock.Unlock()
 					w.addTask(taskid, task.TaskType.Short(), worker.Info.Hostname)
 					allworkers[i] = w
 					log.Debugf("add task %s to worker %s do   %s", taskid, worker.Info.Hostname, task.TaskType.Short())
 					return true
 				}
 				if w.getTask(taskid) == taskid {
+					lock.Lock()
+					defer lock.Unlock()
 					w.updateTaskStatus(taskid, task.TaskType.Short())
 					allworkers[i] = w
 					log.Debugf("update task %s to worker %s do   %s", taskid, worker.Info.Hostname, task.TaskType.Short())
