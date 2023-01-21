@@ -100,6 +100,8 @@ func findWorkertoAllworkers(wname string) {
 	addWorkertoAllworkers(wname)
 }
 func writeAllworkersToJson() error {
+	lock.Lock()
+	defer lock.Unlock()
 	file, _ := os.Create("workers.json")
 	defer file.Close()
 
