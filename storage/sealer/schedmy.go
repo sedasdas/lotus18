@@ -1,6 +1,7 @@
 package sealer
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -102,26 +103,26 @@ func findWorkertoAllworkers(wname string) {
 func writeAllworkersToJson() error {
 	lock.Lock()
 	defer lock.Unlock()
-	file, _ := os.Create("workers.json")
+	file, _ := os.Create(".workers.json")
 	defer file.Close()
-
-	// convert the struct to JSON
-	data, _ := json.Marshal(allworkers)
-
-	// write the JSON data to the file
-	_, _ = file.Write(data)
+	buf := new(bytes.Buffer)
+	err := json.NewEncoder(buf).Encode(allworkers)
+	if err != nil {
+		panic(err)
+	}
+	_, err = file.Write([]byte(buf.Bytes()))
+	if err != nil {
+		panic(err)
+	}
 	return nil
 }
 func readAllworkersFromJson() ([]MyWorker, error) {
-	file, _ := os.Open("workers.json")
-	defer file.Close()
-
-	// read the JSON data from the file
-	data, _ := os.ReadFile("workers.json")
-
-	// convert the JSON data to a struct
-	var alwos []MyWorker
-	_ = json.Unmarshal(data, &alwos)
-	allworkers = alwos
-	return alwos, nil
+	file, err := os.ReadFile(".workers.json")
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(file, &allworkers); err != nil {
+		panic(err)
+	}
+	return allworkers, nil
 }
