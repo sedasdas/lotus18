@@ -11,9 +11,10 @@ var lck sync.Mutex
 
 type Tasks struct {
 	Tasklist map[string]string `json:"tasklist"`
+	P1Count  int
 }
 
-var alls = make(map[string]Tasks)
+var alls = make(map[string]*Tasks)
 
 func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 	taskid := task.Sector.ID.Number.String()
@@ -24,19 +25,26 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 	defer lck.Unlock()
 	if worker.Info.Hostname != "miner" {
 		if _, ok := alls[workername]; !ok {
-			alls[workername] = Tasks{Tasklist: make(map[string]string)}
+			alls[workername] = &Tasks{Tasklist: make(map[string]string)}
 			log.Debugf("add new worker %s", alls[workername])
 		}
 
-		if tasktype == "AP" && len(alls[workername].Tasklist) < 5 {
+		if tasktype == "AP" && len(alls[workername].Tasklist) < 10 && alls[workername].P1Count < 4 {
 			alls[workername].Tasklist[taskid] = tasktype
+			log.Debugf("add taskid for %s woker", taskid, workername)
+			return true
+		}
+		if tasktype == "PC1" && alls[workername].P1Count < 4 {
+			alls[workername].Tasklist[taskid] = tasktype
+			alls[workername].P1Count++
 			log.Debugf("add taskid for %s woker", taskid, workername)
 			return true
 		}
 		if _, ok := alls[workername].Tasklist[taskid]; ok {
 			alls[workername].Tasklist[taskid] = tasktype
 			log.Debugf("update tasktype is %s woker", taskid, workername, tasktype)
-			if alls[workername].Tasklist[taskid] == "FIN" {
+			if alls[workername].Tasklist[taskid] == "PC2" {
+				alls[workername].P1Count--
 				delete(alls[workername].Tasklist, taskid)
 				log.Debugf("delete taskid for %s woker", taskid, workername)
 			}
