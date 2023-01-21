@@ -119,5 +119,6 @@ func readAllworkersFromJson() ([]MyWorker, error) {
 	// convert the JSON data to a struct
 	var alwos []MyWorker
 	_ = json.Unmarshal(data, &alwos)
+	allworkers = alwos
 	return alwos, nil
 }
