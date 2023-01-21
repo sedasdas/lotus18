@@ -11,28 +11,25 @@ import (
 var lock sync.Mutex
 
 type MyWorker struct {
-	tasklist sync.Map
-	name     string `json:"name"`
+	Tasklist map[string]string `json:"tasklist"`
+	Name     string            `json:"name"`
 }
 
 var allworkers = []MyWorker{}
 
 func (myw *MyWorker) addTask(taskid string, status string, worker string) error {
-	if _, loaded := myw.tasklist.LoadOrStore(taskid, status); loaded {
-		return fmt.Errorf("task with id %s already exists", taskid)
-	}
-	myw.name = worker
+	myw.Tasklist[taskid] = status
 	return nil
 }
 func (myw *MyWorker) delTask(taskid string) error {
-	if _, ok := myw.tasklist.Load(taskid); !ok {
+	if _, ok := myw.Tasklist[taskid]; !ok {
 		return fmt.Errorf("task with id %s not found", taskid)
 	}
-	myw.tasklist.Delete(taskid)
+	delete(myw.Tasklist, taskid)
 	return nil
 }
 func (myw *MyWorker) getTask(taskid string) string {
-	if _, ok := myw.tasklist.Load(taskid); ok {
+	if _, ok := myw.Tasklist[taskid]; ok {
 		log.Debugf("task %s  founed", taskid)
 		return taskid
 	}
@@ -40,22 +37,17 @@ func (myw *MyWorker) getTask(taskid string) string {
 
 }
 func (myw *MyWorker) getTaskStatus(taskid string) string {
-	if status, ok := myw.tasklist.Load(taskid); ok {
-		return status.(string)
+	if status, ok := myw.Tasklist[taskid]; ok {
+		return status
 	}
 	return ""
 }
 
 func (myw *MyWorker) getWorker() string {
-	return myw.name
+	return myw.Name
 }
 func (myw *MyWorker) getTaskListLen() int {
-	var length int
-	myw.tasklist.Range(func(_, _ interface{}) bool {
-		length++
-		return true
-	})
-	return length
+	return len(myw.Tasklist)
 }
 
 func SchedMy(task *WorkerRequest, worker *WorkerHandle) bool {
@@ -97,8 +89,8 @@ func addWorkertoAllworkers(name string) error {
 	lock.Lock()
 	defer lock.Unlock()
 	wok := &MyWorker{
-		tasklist: sync.Map{},
-		name:     name,
+		Tasklist: make(map[string]string),
+		Name:     name,
 	}
 	allworkers = append(allworkers, *wok)
 	log.Debugf("add worker %s to allworkers", name)
