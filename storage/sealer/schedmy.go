@@ -87,8 +87,7 @@ func addWorkertoAllworkers(name string) error {
 	return nil
 }
 func findWorkertoAllworkers(wname string) {
-	lock.Lock()
-	defer lock.Unlock()
+
 	for _, w := range allworkers {
 		if w.getWorker() == wname {
 			log.Debugf("find worker %s in allworkers", wname)
