@@ -26,6 +26,11 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 		if _, ok := all[workername]; !ok {
 			alls[workername] = Tasks{Tasklist: make(map[string]string)}
 		}
+		if tasktype == "AP" && len(all[workername].Tasklist) < 5 {
+			all[workername].Tasklist[taskid] = tasktype
+			log.Debugf("add taskid for %s woker", taskid, workername)
+			return true
+		}
 		if _, ok := alls[workername].Tasklist[taskid]; ok {
 			if all[workername].Tasklist[taskid] == "FIN" {
 				delete(all[workername].Tasklist, taskid)
@@ -33,12 +38,6 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 			}
 			alls[workername].Tasklist[taskid] = tasktype
 			log.Debugf("update tasktype is %s woker", taskid, workername, tasktype)
-			return true
-		}
-
-		if tasktype == "AP" && len(all[workername].Tasklist) < 5 {
-			all[workername].Tasklist[taskid] = tasktype
-			log.Debugf("add taskid for %s woker", taskid, workername)
 			return true
 		}
 	}
