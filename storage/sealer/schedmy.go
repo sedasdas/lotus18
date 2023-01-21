@@ -105,7 +105,7 @@ func findWorkertoAllworkers(wname string) {
 func writeAllworkersToJson() error {
 	lock.Lock()
 	defer lock.Unlock()
-	file, _ := os.Create(".workers.json")
+	file, _ := os.OpenFile("/home/cali/lotusjson", os.O_WRONLY|os.O_TRUNC, 0666)
 	defer file.Close()
 	log.Debugf("write allworkers to .workers.json", allworkers)
 	buf := new(bytes.Buffer)
