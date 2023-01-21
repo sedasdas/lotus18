@@ -72,7 +72,7 @@ func SchedMy(task *WorkerRequest, worker *WorkerHandle) bool {
 					log.Debugf("add task %s to worker %s do   %s", taskid, worker.Info.Hostname, task.TaskType.Short())
 					return true
 				}
-				if w.getTask(taskid) == allworkers[i].getTask(taskid) {
+				if w.getTask(taskid) == taskid {
 					log.Debugf("task %s is already in worker %s", taskid, worker.Info.Hostname)
 					return true
 				}
