@@ -28,27 +28,30 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 			alls[workername] = &Tasks{Tasklist: make(map[string]string)}
 			log.Debugf("add new worker %s", alls[workername])
 		}
-
+		if tasktype == "FIN" {
+			delete(alls[workername].Tasklist, taskid)
+			log.Debugf("delete taskid for %s woker", taskid, workername)
+			return true
+		}
+		if tasktype == "PC2" {
+			alls[workername].P1Count--
+			log.Debugf("pc 1 done  %s woker", taskid, workername)
+			return true
+		}
 		if tasktype == "AP" && len(alls[workername].Tasklist) < 10 && alls[workername].P1Count < 4 {
 			alls[workername].Tasklist[taskid] = tasktype
-			log.Debugf("add taskid for %s woker", taskid, workername)
+			log.Debugf("add taskid ap for %s woker", taskid, workername)
 			return true
 		}
 		if tasktype == "PC1" && alls[workername].P1Count < 4 {
 			alls[workername].Tasklist[taskid] = tasktype
 			alls[workername].P1Count++
-			log.Debugf("add taskid for %s woker", taskid, workername)
+			log.Debugf("add taskid pc 1 for %s woker", taskid, workername)
 			return true
 		}
 		if _, ok := alls[workername].Tasklist[taskid]; ok {
 			alls[workername].Tasklist[taskid] = tasktype
 			log.Debugf("update tasktype is %s woker", taskid, workername, tasktype)
-			if alls[workername].Tasklist[taskid] == "PC2" {
-
-				alls[workername].P1Count--
-				delete(alls[workername].Tasklist, taskid)
-				log.Debugf("delete taskid for %s woker", taskid, workername)
-			}
 			return true
 		}
 	}
