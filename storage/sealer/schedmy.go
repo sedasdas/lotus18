@@ -31,13 +31,19 @@ func (myw *MyWorker) delTask(taskid string) error {
 	myw.tasklist.Delete(taskid)
 	return nil
 }
-func (myw *MyWorker) getTask(taskid string) (string, string) {
-	if status, ok := myw.tasklist.Load(taskid); ok {
+func (myw *MyWorker) getTask(taskid string) string {
+	if _, ok := myw.tasklist.Load(taskid); ok {
 		log.Debugf("task %s  founed", taskid)
-		return taskid, status.(string)
+		return taskid
 	}
-	return "", ""
+	return ""
 
+}
+func (myw *MyWorker) getTaskStatus(taskid string) string {
+	if status, ok := myw.tasklist.Load(taskid); ok {
+		return status.(string)
+	}
+	return ""
 }
 
 func (myw *MyWorker) getWorker() string {
@@ -59,7 +65,7 @@ func SchedMy(task *WorkerRequest, worker *WorkerHandle) bool {
 		findWorkertoAllworkers(worker.Info.Hostname)
 		for i, w := range allworkers {
 			if w.getWorker() == worker.Info.Hostname {
-				if _, status := w.getTask(taskid); status == "FIN" {
+				if status := w.getTaskStatus(taskid); status == "FIN" {
 					if err := w.delTask(taskid); err != nil {
 						return false
 					}
