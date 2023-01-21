@@ -63,6 +63,7 @@ func SchedMy(task *WorkerRequest, worker *WorkerHandle) bool {
 					if err := w.delTask(taskid); err != nil {
 						return false
 					}
+					allworkers[i] = w
 					return true
 				}
 				if w.getTaskListLen() < 7 && task.TaskType.Short() == "AP" {
