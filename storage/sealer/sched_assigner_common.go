@@ -6,6 +6,7 @@ import (
 	"sync"
 )
 
+type WindowSelector func(sh *Scheduler, queueLen int, acceptableWindows [][]int, windows []SchedWindow) int
 type AssignerCommon struct {
 	taskChannel chan *Scheduler
 	wg          sync.WaitGroup
