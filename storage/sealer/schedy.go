@@ -56,28 +56,17 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 				log.Debugf("delete taskid for %s woker", taskid, workername)
 				return true
 			}
-			if tasktype == "PC1" && alls[workername].getTaskCountPc1("PC1") < 4 {
-				alls[workername].Tasklist[taskid] = tasktype
-				log.Debugf("add taskid pc1 for %s woker", taskid, workername)
-				return true
-			}
-			if tasktype != "PC1" {
-				if tasktype == "C2" && alls[workername].getTaskCountPc1("C2") > 0 {
-					log.Debugf("worker %s is busy", workername)
-					return false
-				}
-				if tasktype == "PC2" && alls[workername].getTaskCountPc1("PC2") > 1 {
-					log.Debugf("worker %s is busy", workername)
-					return false
-				}
-				alls[workername].Tasklist[taskid] = tasktype
-				log.Debugf("update tasktype is %s woker", taskid, workername, tasktype)
-				return true
-			}
-
+			alls[workername].Tasklist[taskid] = tasktype
+			log.Debugf("update taskid for %s woker", taskid, workername)
+			return true
+		}
+		if len(alls[workername].Tasklist) > 10 || alls[workername].getTaskCountPc1("PC1") > 4 || alls[workername].getTaskCountPc1("PC2") > 1 || alls[workername].getTaskCountPc1("AP") > 4 || alls[workername].getTaskCountPc1("C2") > 0 {
+			log.Debugf("worker %s tasklist is full", workername)
+			return false
 		}
 	}
 	log.Debugf("alls is %s ", alls)
+
 	//wAllworkersToJson()
 	return false
 }
