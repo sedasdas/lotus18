@@ -14,7 +14,11 @@ type Tasks struct {
 	P1Count  int
 }
 
+var pck sync.Mutex
+
 func (t *Tasks) getTaskCountPc1(status string) int {
+	pck.Lock()
+	defer pck.Unlock()
 	p1c := 0
 	for _, s := range t.Tasklist {
 		if s == status {

@@ -37,6 +37,7 @@ func (myw *MyWorker) getTask(taskid string) string {
 
 }
 func (myw *MyWorker) getTaskStatus(taskid string) string {
+
 	if status, ok := myw.Tasklist[taskid]; ok {
 		return status
 	}
