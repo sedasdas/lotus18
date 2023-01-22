@@ -33,7 +33,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 	taskid := task.Sector.ID.Number.String()
 	tasktype := task.TaskType.Short()
 	workername := worker.Info.Hostname
-	log.Debugf("taskid is %s woker", taskid, workername)
+	log.Debugf(workername, taskid, tasktype)
 	lck.Lock()
 	defer lck.Unlock()
 	if worker.Info.Hostname != "miner" {
