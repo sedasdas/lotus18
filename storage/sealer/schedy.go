@@ -50,7 +50,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 		if tasktype == "AP" && len(alls[workername].Tasklist) < 10 && alls[workername].getTaskCountPc1("PC1") < 3 && alls[workername].getTaskCountPc1("AP") < 3 {
 			alls[workername].Tasklist[taskid] = tasktype
 			log.Debugf("add taskid ap for %s woker", taskid, workername)
-			atomic.StoreInt32(&p1c, 0)
+
 			return true
 		}
 
