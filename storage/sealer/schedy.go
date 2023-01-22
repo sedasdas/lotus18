@@ -60,7 +60,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 			log.Debugf("update taskid for %s woker", taskid, workername)
 			return true
 		}
-		if len(alls[workername].Tasklist) > 10 || alls[workername].getTaskCountPc1("PC1") > 4 || alls[workername].getTaskCountPc1("PC2") > 1 || alls[workername].getTaskCountPc1("AP") > 4 || alls[workername].getTaskCountPc1("C2") > 0 {
+		if len(alls[workername].Tasklist) > 10 || alls[workername].getTaskCountPc1("PC1") > 4 || alls[workername].getTaskCountPc1("PC2") > 1 || alls[workername].getTaskCountPc1("AP") > 4 || alls[workername].getTaskCountPc1("C2") > 1 {
 			log.Debugf("worker %s tasklist is full", workername)
 			return false
 		}
