@@ -15,13 +15,15 @@ type Tasks struct {
 }
 
 func (t *Tasks) getTaskCountPc1(status string) int {
+	lck.Lock()
+	defer lck.Unlock()
 	p1c := 0
 	for _, s := range t.Tasklist {
 		if s == status {
 			p1c++
 		}
 	}
-	log.Debugf("getTaskCountPc1 is %s ", p1c)
+	log.Debugf("getStatus  %s  TaskCount is %s ", status, p1c)
 	return p1c
 
 }
@@ -59,6 +61,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 		}
 	}
 	log.Debugf("alls is %s ", alls)
+	wAllworkersToJson()
 	return false
 }
 func wAllworkersToJson() error {
