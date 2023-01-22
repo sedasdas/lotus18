@@ -14,11 +14,8 @@ type Tasks struct {
 	P1Count  int
 }
 
-var pck sync.Mutex
-
 func (t *Tasks) getTaskCountPc1(status string) int {
-	pck.Lock()
-	defer pck.Unlock()
+
 	p1c := 0
 	for _, s := range t.Tasklist {
 		if s == status {
@@ -47,7 +44,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 			log.Debugf("worker tasklist  is %s", alls[workername])
 		}
 
-		if tasktype == "AP" && len(alls[workername].Tasklist) < 10 && alls[workername].getTaskCountPc1("PC1") < 3 && alls[workername].getTaskCountPc1("AP") < 3 {
+		if tasktype == "AP" && len(alls[workername].Tasklist) < 10 && alls[workername].getTaskCountPc1("PC1") < 4 && alls[workername].getTaskCountPc1("AP") < 3 {
 			alls[workername].Tasklist[taskid] = tasktype
 			log.Debugf("add taskid ap for %s woker", taskid, workername)
 
@@ -58,6 +55,11 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 			if tasktype == "FIN" {
 				delete(alls[workername].Tasklist, taskid)
 				log.Debugf("delete taskid for %s woker", taskid, workername)
+				return true
+			}
+			if tasktype == "PC1" && alls[workername].getTaskCountPc1("PC1") < 4 {
+				alls[workername].Tasklist[taskid] = tasktype
+				log.Debugf("add taskid pc1 for %s woker", taskid, workername)
 				return true
 			}
 			alls[workername].Tasklist[taskid] = tasktype
