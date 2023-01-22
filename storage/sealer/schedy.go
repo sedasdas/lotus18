@@ -62,6 +62,14 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 				return true
 			}
 			if tasktype != "PC1" {
+				if tasktype == "C2" && alls[workername].getTaskCountPc1("C2") > 0 {
+					log.Debugf("worker %s is busy", workername)
+					return false
+				}
+				if tasktype == "PC2" && alls[workername].getTaskCountPc1("PC2") > 1 {
+					log.Debugf("worker %s is busy", workername)
+					return false
+				}
 				alls[workername].Tasklist[taskid] = tasktype
 				log.Debugf("update tasktype is %s woker", taskid, workername, tasktype)
 				return true
