@@ -11,7 +11,6 @@ var lck sync.Mutex
 
 type Tasks struct {
 	Tasklist map[string]string `json:"tasklist"`
-	P1Count  int
 }
 
 func (t *Tasks) getTaskCountPc1(status string) int {
@@ -44,7 +43,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 			log.Debugf("worker tasklist  is %s", alls[workername])
 		}
 
-		if tasktype == "AP" && len(alls[workername].Tasklist) < 10 && alls[workername].getTaskCountPc1("PC1") < 5 && alls[workername].getTaskCountPc1("AP") < 4 {
+		if tasktype == "AP" && len(alls[workername].Tasklist) < 10 && alls[workername].getTaskCountPc1("PC1") < 4 && alls[workername].getTaskCountPc1("AP") < 4 {
 			alls[workername].Tasklist[taskid] = tasktype
 			log.Debugf("add taskid ap for %s woker", taskid, workername)
 
@@ -57,7 +56,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 				log.Debugf("delete taskid for %s woker", taskid, workername)
 				return true
 			}
-			if tasktype == "PC1" && alls[workername].getTaskCountPc1("PC1") < 5 {
+			if tasktype == "AP" && alls[workername].getTaskCountPc1("PC1") < 4 {
 				alls[workername].Tasklist[taskid] = tasktype
 				log.Debugf("add taskid pc1 for %s woker", taskid, workername)
 				return true
