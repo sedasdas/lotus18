@@ -24,8 +24,10 @@ func (t *Tasks) getTaskCountPc1(status string) int {
 			p1c++
 		}
 	}
+	count := int(p1c)
 	log.Debugf("getStatus  %s  TaskCount is %s ", status, p1c)
-	return int(p1c)
+	atomic.StoreInt32(&p1c, 0)
+	return count
 
 }
 
