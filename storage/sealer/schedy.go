@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"sync"
+	"sync/atomic"
 )
 
 var lck sync.Mutex
@@ -14,15 +15,17 @@ type Tasks struct {
 	P1Count  int
 }
 
+var p1c int32
+
 func (t *Tasks) getTaskCountPc1(status string) int {
-	p1c := 0
+	p1c := atomic.AddInt32(&p1c, 1)
 	for _, s := range t.Tasklist {
 		if s == status {
 			p1c++
 		}
 	}
 	log.Debugf("getStatus  %s  TaskCount is %s ", status, p1c)
-	return p1c
+	return int(p1c)
 
 }
 
