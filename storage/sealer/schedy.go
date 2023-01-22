@@ -56,14 +56,17 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 				log.Debugf("delete taskid for %s woker", taskid, workername)
 				return true
 			}
-			if tasktype == "AP" && alls[workername].getTaskCountPc1("PC1") < 4 {
+			if tasktype == "PC1" && alls[workername].getTaskCountPc1("PC1") < 4 {
 				alls[workername].Tasklist[taskid] = tasktype
 				log.Debugf("add taskid pc1 for %s woker", taskid, workername)
 				return true
 			}
-			alls[workername].Tasklist[taskid] = tasktype
-			log.Debugf("update tasktype is %s woker", taskid, workername, tasktype)
-			return true
+			if tasktype != "PC1" {
+				alls[workername].Tasklist[taskid] = tasktype
+				log.Debugf("update tasktype is %s woker", taskid, workername, tasktype)
+				return true
+			}
+
 		}
 	}
 	log.Debugf("alls is %s ", alls)
