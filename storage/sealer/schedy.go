@@ -15,8 +15,6 @@ type Tasks struct {
 }
 
 func (t *Tasks) getTaskCountPc1(status string) int {
-	lck.Lock()
-	defer lck.Unlock()
 	p1c := 0
 	for _, s := range t.Tasklist {
 		if s == status {
@@ -44,7 +42,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 			log.Debugf("worker tasklist  is %s", alls[workername])
 		}
 
-		if tasktype == "AP" && len(alls[workername].Tasklist) < 10 && alls[workername].getTaskCountPc1("PC1") < 4 && alls[workername].getTaskCountPc1("AP") < 4 {
+		if tasktype == "AP" && len(alls[workername].Tasklist) < 10 && alls[workername].getTaskCountPc1("PC1") < 3 && alls[workername].getTaskCountPc1("AP") < 3 {
 			alls[workername].Tasklist[taskid] = tasktype
 			log.Debugf("add taskid ap for %s woker", taskid, workername)
 			return true
@@ -62,7 +60,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 		}
 	}
 	log.Debugf("alls is %s ", alls)
-	wAllworkersToJson()
+	//wAllworkersToJson()
 	return false
 }
 func wAllworkersToJson() error {
