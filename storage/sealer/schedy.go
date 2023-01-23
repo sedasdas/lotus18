@@ -14,20 +14,14 @@ type Tasks struct {
 }
 
 func (t *Tasks) getTaskCountPc1(status string) int {
-	if len(t.Tasklist) == 0 {
-		log.Debugf("t is nil")
-		return 0
-	}
 	p1c := 0
 	for _, s := range t.Tasklist {
 		if s == status {
 			p1c++
 		}
 	}
-	log.Debugf(string(len(t.Tasklist)))
-	log.Debugf("getStatus  %s  TaskCount is %s ", status, p1c)
-	return p1c
 
+	return p1c
 }
 
 var alls = make(map[string]*Tasks)
