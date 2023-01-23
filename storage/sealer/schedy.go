@@ -58,10 +58,6 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 			}
 			alls[workername].Tasklist[taskid] = tasktype
 			log.Debugf("update taskid for %s woker", taskid, workername)
-			if alls[workername].getTaskCountPc1("PC1") > 4 || alls[workername].getTaskCountPc1("PC2") > 1 || alls[workername].getTaskCountPc1("AP") > 4 || alls[workername].getTaskCountPc1("C2") > 1 {
-				log.Debugf("worker %s tasklist is full", workername)
-				return false
-			}
 			return true
 		}
 
