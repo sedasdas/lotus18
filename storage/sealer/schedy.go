@@ -61,7 +61,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 					return true
 				}
 			case "PC2":
-				if alls[workername].getTaskCountPc1("PC2") < 1 {
+				if alls[workername].getTaskCountPc1("PC2") < 4 {
 					alls[workername].Tasklist[taskid] = tasktype
 					log.Debugf("update taskid pc2 for %s woker", taskid, workername)
 					return true
