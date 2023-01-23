@@ -23,7 +23,7 @@ func (t *Tasks) getTaskCountPc1(status string) int {
 	}
 
 	log.Debugf("getStatus  %s  TaskCount is %s ", status, p1c)
-	return p1c
+	return p1c + 1
 
 }
 
