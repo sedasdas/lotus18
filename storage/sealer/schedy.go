@@ -74,6 +74,10 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 				delete(alls[workername].Tasklist, taskid)
 				log.Debugf("delete taskid for %s woker", taskid, workername)
 				return true
+			case "C1":
+				alls[workername].Tasklist[taskid] = tasktype
+				log.Debugf("update taskid c1 for %s woker", taskid, workername)
+				return true
 			}
 			log.Debugf("task %s  founed but not update", taskid)
 			//log.Debugf("worker %s tasklist is full", workername)
