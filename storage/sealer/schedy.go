@@ -51,23 +51,37 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 		}
 
 		if _, ok := alls[workername].Tasklist[taskid]; ok {
-			if tasktype == "FIN" {
+			log.Debugf("task %s  founed", taskid)
+			switch tasktype {
+			case "PC1":
+				if alls[workername].getTaskCountPc1("PC1") < 4 {
+					alls[workername].Tasklist[taskid] = tasktype
+					log.Debugf("update taskid pc1 for %s woker", taskid, workername)
+					return true
+				}
+			case "PC2":
+				if alls[workername].getTaskCountPc1("PC2") < 2 {
+					alls[workername].Tasklist[taskid] = tasktype
+					log.Debugf("update taskid pc2 for %s woker", taskid, workername)
+					return true
+				}
+			case "C2":
+				if alls[workername].getTaskCountPc1("C2") < 2 {
+					alls[workername].Tasklist[taskid] = tasktype
+					log.Debugf("update taskid pc3 for %s woker", taskid, workername)
+					return true
+				}
+			case "FIN":
 				delete(alls[workername].Tasklist, taskid)
 				log.Debugf("delete taskid for %s woker", taskid, workername)
 				return true
 			}
-
-			if alls[workername].getTaskCountPc1("PC1") < 4 && alls[workername].getTaskCountPc1("PC2") < 2 && alls[workername].getTaskCountPc1("C2") < 2 {
-				alls[workername].Tasklist[taskid] = tasktype
-				log.Debugf("update taskid for %s woker", taskid, workername)
-				return true
-			}
-			log.Debugf("worker %s tasklist is full", workername)
+			log.Debugf("task %s  founed but not update", taskid)
+			//log.Debugf("worker %s tasklist is full", workername)
 			return false
 		}
 
 	}
-	log.Debugf("alls is %s ", alls)
 
 	//wAllworkersToJson()
 	return false
