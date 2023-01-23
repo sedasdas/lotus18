@@ -46,7 +46,6 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 		if tasktype == "AP" && len(alls[workername].Tasklist) < 10 && alls[workername].getTaskCountPc1("PC1") < 4 && alls[workername].getTaskCountPc1("AP") < 4 {
 			alls[workername].Tasklist[taskid] = tasktype
 			log.Debugf("add taskid ap for %s woker", taskid, workername)
-
 			return true
 		}
 
@@ -54,19 +53,19 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 			log.Debugf("task %s  founed", taskid)
 			switch tasktype {
 			case "PC1":
-				if alls[workername].getTaskCountPc1("PC1") < 4 {
+				if alls[workername].getTaskCountPc1("PC1") <= 4 {
 					alls[workername].Tasklist[taskid] = tasktype
 					log.Debugf("update taskid pc1 for %s woker", taskid, workername)
 					return true
 				}
 			case "PC2":
-				if alls[workername].getTaskCountPc1("PC2") < 2 {
+				if alls[workername].getTaskCountPc1("PC2") <= 1 {
 					alls[workername].Tasklist[taskid] = tasktype
 					log.Debugf("update taskid pc2 for %s woker", taskid, workername)
 					return true
 				}
 			case "C2":
-				if alls[workername].getTaskCountPc1("C2") < 2 {
+				if alls[workername].getTaskCountPc1("C2") <= 1 {
 					alls[workername].Tasklist[taskid] = tasktype
 					log.Debugf("update taskid pc3 for %s woker", taskid, workername)
 					return true
