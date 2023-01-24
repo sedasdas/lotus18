@@ -93,10 +93,12 @@ func (a *ActiveResources) Can(tt sealtasks.SealTaskType, needRes storiface.Resou
 }
 
 func (a *ActiveResources) CanHandleRequest(tt sealtasks.SealTaskType, needRes storiface.Resources, wid storiface.WorkerID, caller string, info storiface.WorkerInfo) bool {
-
+	tp := new(sealtasks.SealTaskType)
+	tp.TaskType = sealtasks.TaskType("seal/v0/precommit/1")
+	tp.SealTask(8)
 	//log.Debugf(info.Hostname + "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss")
 	if needRes.MaxConcurrent > 0 {
-		if a.taskCounters[tt] >= needRes.MaxConcurrent {
+		if a.taskCounters[tt] >= needRes.MaxConcurrent && a.taskCounters[*tp] >= 4 {
 			log.Debugf("sched: not scheduling on worker %s for %s; at task limit tt=%s, curcount=%d", wid, caller, tt, a.taskCounters[tt])
 			return false
 		}
