@@ -38,7 +38,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 			alls[workername] = &Tasks{Tasklist: make(map[string]string)}
 			log.Debugf("add new worker %s", alls[workername])
 		}
-		if tasktype == "AP" && alls[workername].getTaskCountPc1("PC1") < 4 && alls[workername].getTaskCountPc1("AP") < 4 {
+		if tasktype == "AP" {
 			alls[workername].Tasklist[taskid] = tasktype
 			log.Debugf("add taskid ap for %s woker", taskid, workername)
 			return true
