@@ -30,7 +30,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 	taskid := task.Sector.ID.Number.String()
 	tasktype := task.TaskType.Short()
 	workername := worker.Info.Hostname
-	log.Debugf(workername, taskid, tasktype)
+	//log.Debugf(workername, taskid, tasktype)
 	lck.Lock()
 	defer lck.Unlock()
 	if worker.Info.Hostname != "miner" {
@@ -38,14 +38,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 			alls[workername] = &Tasks{Tasklist: make(map[string]string)}
 			log.Debugf("add new worker %s", alls[workername])
 		}
-		if len(alls[workername].Tasklist) != 0 {
-			if alls[workername].Tasklist[taskid] == tasktype {
-				log.Debugf("task %s  is running on worker %s", taskid, workername)
-				return true
-			}
-
-		}
-		if tasktype == "AP" && len(alls[workername].Tasklist) < 10 && alls[workername].getTaskCountPc1("PC1") < 4 && alls[workername].getTaskCountPc1("AP") < 4 {
+		if tasktype == "AP" && alls[workername].getTaskCountPc1("PC1") < 4 {
 			alls[workername].Tasklist[taskid] = tasktype
 			log.Debugf("add taskid ap for %s woker", taskid, workername)
 			return true
@@ -53,45 +46,16 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 
 		if _, ok := alls[workername].Tasklist[taskid]; ok && tasktype != "AP" {
 			log.Debugf("task %s  is added ", taskid)
-			switch tasktype {
-			case "PC1":
-				if alls[workername].getTaskCountPc1("PC1") < 4 {
-					alls[workername].Tasklist[taskid] = tasktype
-					log.Debugf("update taskid pc1 for %s woker", taskid, workername)
-					return true
-				}
-			case "PC2":
-				if alls[workername].getTaskCountPc1("PC2") < 4 {
-					alls[workername].Tasklist[taskid] = tasktype
-					log.Debugf("update taskid pc2 for %s woker", taskid, workername)
-					return true
-				}
-			case "C2":
-				if alls[workername].getTaskCountPc1("C2") < 1 {
-					alls[workername].Tasklist[taskid] = tasktype
-					log.Debugf("update taskid pc3 for %s woker", taskid, workername)
-					return true
-				}
-			case "FIN":
-				delete(alls[workername].Tasklist, taskid)
-				log.Debugf("delete taskid for %s woker", taskid, workername)
-				return true
-			case "C1":
-				alls[workername].Tasklist[taskid] = tasktype
-				log.Debugf("update taskid c1 for %s woker", taskid, workername)
-				return true
-			}
-			log.Debugf("task %s  founed but not update", taskid)
-			//log.Debugf("worker %s tasklist is full", workername)
-			return false
+			alls[workername].Tasklist[taskid] = tasktype
+			log.Debugf("update taskid %s type is  %s  for woker %s ", taskid, tasktype, workername)
+			return true
 		}
 
 	}
-	if workername == "miner" {
-		if tasktype == "FIN" {
-			return true
-		}
+	if tasktype == "FIN" {
+		return true
 	}
+
 	//wAllworkersToJson()
 	return false
 }
