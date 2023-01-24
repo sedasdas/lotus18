@@ -99,11 +99,11 @@ func (a *ActiveResources) CanHandleRequest(tt sealtasks.SealTaskType, needRes st
 	//log.Debugf(info.Hostname + "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss")
 	if needRes.MaxConcurrent > 0 {
 		if a.taskCounters[tt] >= needRes.MaxConcurrent {
+			if tt.TaskType == "seal/v0/addpiece" && a.taskCounters[*tp] >= 4 {
+				log.Debugf("the worker %s pc 1 is  %s", wid, a.taskCounters[*tp])
+				return false
+			}
 			log.Debugf("sched: not scheduling on worker %s for %s; at task limit tt=%s, curcount=%d", wid, caller, tt, a.taskCounters[tt])
-			return false
-		}
-		if tt.TaskType == "seal/v0/addpiece" && a.taskCounters[*tp] >= 4 {
-			log.Debugf("the worker %s pc 1 is  %s", wid, a.taskCounters[*tp])
 			return false
 		}
 
