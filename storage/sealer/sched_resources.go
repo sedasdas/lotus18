@@ -141,7 +141,7 @@ func (a *ActiveResources) CanHandleRequest(tt sealtasks.SealTaskType, needRes st
 	if len(res.GPUs) > 0 && needRes.GPUUtilization > 0 {
 		if a.gpuUsed+needRes.GPUUtilization > float64(len(res.GPUs)) {
 			log.Debugf("sched: not scheduling on worker %s for %s; GPU(s) in use", wid, caller)
-			return true
+			return false
 		}
 	}
 
