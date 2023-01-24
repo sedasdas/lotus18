@@ -65,11 +65,15 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 					continue
 				}
 
+				needRes := worker.Info.Resources.ResourceSpec(task.Sector.ProofType, task.TaskType)
+
+				// TODO: allow bigger windows
+				if !windows[wnd].Allocated.CanHandleRequest(task.SealTask(), needRes, windowRequest.Worker, "schedAcceptable", worker.Info) {
+					continue
+				}
 				if task.TaskType != sealtasks.TTFetch && !SchedMyn(task, worker) {
 					continue
 				}
-
-				// TODO: allow bigger windows
 
 				rpcCtx, cancel := context.WithTimeout(task.Ctx, SelectorTimeout)
 
