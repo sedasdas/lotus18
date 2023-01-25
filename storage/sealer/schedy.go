@@ -50,10 +50,13 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 				log.Debugf("update taskid ap for %s woker", taskid, workername)
 				return true
 			}
-			log.Debugf("task %s  is added ", taskid)
-			alls[workername].Tasklist[taskid] = tasktype
-			log.Debugf("update taskid %s type is  %s  for woker %s ", taskid, tasktype, workername)
-			return true
+			if tasktype != "AP" {
+				alls[workername].Tasklist[taskid] = tasktype
+				log.Debugf("update taskid %s for %s woker", tasktype, taskid, workername)
+				return true
+			}
+			log.Debugf("taskid %s for %s woker is busy", taskid, workername)
+			return false
 		}
 
 	}
