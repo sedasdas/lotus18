@@ -153,5 +153,5 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 	}
 
 	sh.OpenWindows = newOpenWindows
-	wAllworkersToJson()
+	//wAllworkersToJson()
 }
