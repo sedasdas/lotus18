@@ -61,7 +61,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 		return true
 	}
 
-	//wAllworkersToJson()
+	wAllworkersToJson()
 	return false
 }
 func wAllworkersToJson() error {
