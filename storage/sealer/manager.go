@@ -618,7 +618,6 @@ func (m *Manager) SealCommit2(ctx context.Context, sector storiface.SectorRef, p
 func (m *Manager) FinalizeSector(ctx context.Context, sector storiface.SectorRef, keepUnsealed []storiface.Range) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-
 	if err := m.index.StorageLock(ctx, sector.ID, storiface.FTNone, storiface.FTSealed|storiface.FTUnsealed|storiface.FTCache); err != nil {
 		return xerrors.Errorf("acquiring sector lock: %w", err)
 	}
@@ -635,7 +634,7 @@ func (m *Manager) FinalizeSector(ctx context.Context, sector storiface.SectorRef
 			unsealed = storiface.FTNone
 		}
 	}
-
+	log.Debugf("FinalizeSector: %d unsealed=%d", sector.ID, unsealed)
 	// Make sure that the sealed file is still in sealing storage; In case it already
 	// isn't, we want to do finalize in long-term storage
 	pathType := storiface.PathStorage
@@ -652,11 +651,11 @@ func (m *Manager) FinalizeSector(ctx context.Context, sector storiface.SectorRef
 			}
 		}
 	}
-
+	log.Debugf("FinalizeSector: %d pathType=%d", sector.ID, pathType)
 	// do the cache trimming wherever the likely still very large cache lives.
 	// we really don't want to move it.
 	selector := newExistingSelector(m.index, sector.ID, storiface.FTCache, false)
-
+	log.Debugf("FinalizeSector: %d selector=%+v", sector.ID, selector)
 	err := m.sched.Schedule(ctx, sector, sealtasks.TTFinalize, selector,
 		m.schedFetch(sector, storiface.FTCache|unsealed, pathType, storiface.AcquireMove),
 		func(ctx context.Context, w Worker) error {
@@ -669,7 +668,7 @@ func (m *Manager) FinalizeSector(ctx context.Context, sector storiface.SectorRef
 
 	// get a selector for moving stuff into long-term storage
 	fetchSel := newMoveSelector(m.index, sector.ID, storiface.FTCache|storiface.FTSealed, storiface.PathStorage, !m.disallowRemoteFinalize)
-
+	log.Debugf("FinalizeSector: %d fetchSel=%+v", sector.ID, fetchSel)
 	// only move the unsealed file if it still exists and needs moving
 	moveUnsealed := unsealed
 	{
@@ -677,7 +676,7 @@ func (m *Manager) FinalizeSector(ctx context.Context, sector storiface.SectorRef
 			moveUnsealed = storiface.FTNone
 		}
 	}
-
+	log.Debugf("FinalizeSector: %d moveUnsealed=%d", sector.ID, moveUnsealed)
 	// move stuff to long-term storage
 	err = m.sched.Schedule(ctx, sector, sealtasks.TTFetch, fetchSel,
 		m.schedFetch(sector, storiface.FTCache|storiface.FTSealed|moveUnsealed, storiface.PathStorage, storiface.AcquireMove),
