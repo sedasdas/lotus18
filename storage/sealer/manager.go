@@ -636,28 +636,48 @@ func (m *Manager) FinalizeSector(ctx context.Context, sector storiface.SectorRef
 	}
 	// Make sure that the sealed file is still in sealing storage; In case it already
 	// isn't, we want to do finalize in long-term storage
-	//pathType := storiface.PathStorage
+	pathType := storiface.PathStorage
+	{
+		sealedStores, err := m.index.StorageFindSector(ctx, sector.ID, storiface.FTSealed, 0, false)
+		if err != nil {
+			return xerrors.Errorf("finding sealed sector: %w", err)
+		}
 
+		for _, store := range sealedStores {
+			if store.CanSeal {
+				pathType = storiface.PathSealing
+				break
+			}
+		}
+	}
 	// do the cache trimming wherever the likely still very large cache lives.
 	// we really don't want to move it.
+	selector := newExistingSelector(m.index, sector.ID, storiface.FTCache, false)
+	err := m.sched.Schedule(ctx, sector, sealtasks.TTFinalize, selector,
+		m.schedFetch(sector, storiface.FTCache|unsealed, pathType, storiface.AcquireMove),
+		func(ctx context.Context, w Worker) error {
+			_, err := m.waitSimpleCall(ctx)(w.FinalizeSector(ctx, sector, keepUnsealed))
+			return err
+		})
+	if err != nil {
+		return err
+	}
 
 	// get a selector for moving stuff into long-term storage
 	fetchSel := newMoveSelector(m.index, sector.ID, storiface.FTCache|storiface.FTSealed, storiface.PathStorage, !m.disallowRemoteFinalize)
-	log.Debugf("FinalizeSector: %d fetchSel=%+v", sector.ID, fetchSel)
 	// only move the unsealed file if it still exists and needs moving
 	moveUnsealed := unsealed
 	{
 		if len(keepUnsealed) == 0 {
-			moveUnsealed = storiface.FTAll
+			moveUnsealed = storiface.FTNone
 		}
 	}
-	moveUnsealed = storiface.FTCache | storiface.FTSealed
-	log.Debugf("FinalizeSector: %d moveUnsealed=%d", sector.ID, moveUnsealed)
 	// move stuff to long-term storage
-	err := m.sched.Schedule(ctx, sector, sealtasks.TTFetch, fetchSel,
+	err = m.sched.Schedule(ctx, sector, sealtasks.TTFetch, fetchSel,
 		m.schedFetch(sector, storiface.FTCache|storiface.FTSealed|moveUnsealed, storiface.PathStorage, storiface.AcquireMove),
 		func(ctx context.Context, w Worker) error {
 			_, err := m.waitSimpleCall(ctx)(w.MoveStorage(ctx, sector, storiface.FTCache|storiface.FTSealed|moveUnsealed))
+			log.Debugf("FinalizeSector: %d MoveStorage=%+v", sector.ID, err)
 			return err
 		})
 	if err != nil {
