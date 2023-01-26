@@ -656,7 +656,7 @@ func (m *Manager) FinalizeSector(ctx context.Context, sector storiface.SectorRef
 	// we really don't want to move it.
 	selector := newExistingSelector(m.index, sector.ID, storiface.FTCache, false)
 	log.Debugf("FinalizeSector: %d selector=%+v", sector.ID, selector)
-	err := m.sched.Schedule(ctx, sector, sealtasks.TTFinalize, selector,
+	/*err := m.sched.Schedule(ctx, sector, sealtasks.TTFinalize, selector,
 		m.schedFetch(sector, storiface.FTCache|unsealed, pathType, storiface.AcquireMove),
 		func(ctx context.Context, w Worker) error {
 			_, err := m.waitSimpleCall(ctx)(w.FinalizeSector(ctx, sector, keepUnsealed))
@@ -665,7 +665,7 @@ func (m *Manager) FinalizeSector(ctx context.Context, sector storiface.SectorRef
 	if err != nil {
 		return err
 	}
-
+	*/
 	// get a selector for moving stuff into long-term storage
 	fetchSel := newMoveSelector(m.index, sector.ID, storiface.FTCache|storiface.FTSealed, storiface.PathStorage, !m.disallowRemoteFinalize)
 	log.Debugf("FinalizeSector: %d fetchSel=%+v", sector.ID, fetchSel)
@@ -678,7 +678,7 @@ func (m *Manager) FinalizeSector(ctx context.Context, sector storiface.SectorRef
 	}
 	log.Debugf("FinalizeSector: %d moveUnsealed=%d", sector.ID, moveUnsealed)
 	// move stuff to long-term storage
-	err = m.sched.Schedule(ctx, sector, sealtasks.TTFetch, fetchSel,
+	err := m.sched.Schedule(ctx, sector, sealtasks.TTFetch, fetchSel,
 		m.schedFetch(sector, storiface.FTCache|storiface.FTSealed|moveUnsealed, storiface.PathStorage, storiface.AcquireMove),
 		func(ctx context.Context, w Worker) error {
 			_, err := m.waitSimpleCall(ctx)(w.MoveStorage(ctx, sector, storiface.FTCache|storiface.FTSealed|moveUnsealed))
