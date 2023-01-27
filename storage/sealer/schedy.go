@@ -40,7 +40,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 		}
 		if tasktype == "AP" && alls[workername].getTaskCountPc1("P1C") < 4 {
 			alls[workername].Tasklist[taskid] = tasktype
-			log.Debugf("add taskid ap for %s woker", taskid, workername)
+			log.Debugf("add task ap for %s woker %s", taskid, workername)
 			return true
 		}
 
@@ -48,15 +48,15 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 			if tasktype == "AP" {
 				if alls[workername].getTaskCountPc1("P1C") < 4 {
 					alls[workername].Tasklist[taskid] = tasktype
-					log.Debugf("update taskid ap for %s woker", taskid, workername)
+					log.Debugf("update task ap for %s woker %s", taskid, workername)
 					return true
 				}
 			} else {
 				alls[workername].Tasklist[taskid] = tasktype
-				log.Debugf("update taskid %s for %s woker", tasktype, taskid, workername)
+				log.Debugf("update task %s  id %s for  woker %s\"", tasktype, taskid, workername)
 				return true
 			}
-			log.Debugf("taskid %s for %s woker is busy", taskid, workername)
+			log.Debugf(" %s woker is busy", workername)
 			return false
 		}
 
