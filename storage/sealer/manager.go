@@ -644,7 +644,7 @@ func (m *Manager) FinalizeSector(ctx context.Context, sector storiface.SectorRef
 		}
 
 		for _, store := range sealedStores {
-			log.Debugf("checking store %s", store.URLs)
+			log.Debugf("checking store %s", store.URLs, store.BaseURLs)
 			if store.CanSeal {
 				pathType = storiface.PathSealing
 				break
