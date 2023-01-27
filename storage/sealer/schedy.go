@@ -52,9 +52,6 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 					return true
 				}
 			} else {
-				if tasktype == "FIN" {
-					return false
-				}
 				alls[workername].Tasklist[taskid] = tasktype
 				log.Debugf("update taskid %s for %s woker", tasktype, taskid, workername)
 				return true
@@ -64,7 +61,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 		}
 
 	}
-	if tasktype == "FIN" && workername == "sto" {
+	if tasktype == "FIN" {
 		log.Debugf("fin taskid %s for %s woker", taskid, workername)
 		return true
 	}
