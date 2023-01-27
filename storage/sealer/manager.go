@@ -654,7 +654,7 @@ func (m *Manager) FinalizeSector(ctx context.Context, sector storiface.SectorRef
 	// we really don't want to move it.
 	selector := newExistingSelector(m.index, sector.ID, storiface.FTCache, false)
 	err := m.sched.Schedule(ctx, sector, sealtasks.TTFinalize, selector,
-		m.schedFetch(sector, storiface.FTCache|unsealed, pathType, storiface.AcquireMove),
+		m.schedFetch(sector, storiface.FTCache|unsealed, pathType, storiface.AcquireCopy),
 		func(ctx context.Context, w Worker) error {
 			_, err := m.waitSimpleCall(ctx)(w.FinalizeSector(ctx, sector, keepUnsealed))
 			return err
