@@ -654,7 +654,7 @@ func (m *Manager) FinalizeSector(ctx context.Context, sector storiface.SectorRef
 	// we really don't want to move it.
 	selector := newExistingSelector(m.index, sector.ID, storiface.FTCache, false)
 	err := m.sched.Schedule(ctx, sector, sealtasks.TTFinalize, selector,
-		m.schedFetch(sector, storiface.FTCache|unsealed, pathType, storiface.AcquireCopy),
+		m.schedFetch(sector, storiface.FTCache|unsealed, pathType, storiface.AcquireMove),
 		func(ctx context.Context, w Worker) error {
 			_, err := m.waitSimpleCall(ctx)(w.FinalizeSector(ctx, sector, keepUnsealed))
 			return err
@@ -744,7 +744,7 @@ func (m *Manager) FinalizeReplicaUpdate(ctx context.Context, sector storiface.Se
 		fetchSel := newMoveSelector(m.index, sector.ID, types, storiface.PathStorage, !m.disallowRemoteFinalize)
 
 		err = m.sched.Schedule(ctx, sector, sealtasks.TTFetch, fetchSel,
-			m.schedFetch(sector, types, storiface.PathStorage, storiface.AcquireMove),
+			m.schedFetch(sector, types, storiface.PathStorage, storiface.AcquireCopy),
 			func(ctx context.Context, w Worker) error {
 				_, err := m.waitSimpleCall(ctx)(w.MoveStorage(ctx, sector, types))
 				return err
