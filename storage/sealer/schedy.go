@@ -62,6 +62,10 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 		}
 
 	}
+	if tasktype == "FIN" {
+		log.Debugf("fin taskid %s for %s ", taskid, workername)
+		return true
+	}
 
 	return false
 }
