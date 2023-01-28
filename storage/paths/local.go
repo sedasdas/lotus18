@@ -700,7 +700,7 @@ func (st *Local) MoveStorage(ctx context.Context, s storiface.SectorRef, types s
 		if err != nil {
 			return xerrors.Errorf("failed to get source storage info: %w", err)
 		}
-
+		st.Remove(ctx, s.ID, fileType, false, []storiface.ID{sst.ID})
 		dst, err := st.index.StorageInfo(ctx, storiface.ID(storiface.PathByType(destIds, fileType)))
 		if err != nil {
 			return xerrors.Errorf("failed to get source storage info: %w", err)
@@ -715,7 +715,6 @@ func (st *Local) MoveStorage(ctx context.Context, s storiface.SectorRef, types s
 			log.Debugf("not moving %v(%d); source supports storage", s, fileType)
 			continue
 		}
-		st.removeSector(ctx, s.ID, types, sst.ID)
 		log.Debugf("moving %v(%d) to storage: %s(se:%t; st:%t) -> %s(se:%t; st:%t)", s, fileType, sst.ID, sst.CanSeal, sst.CanStore, dst.ID, dst.CanSeal, dst.CanStore)
 
 		if err := st.index.StorageDropSector(ctx, storiface.ID(storiface.PathByType(srcIds, fileType)), s.ID, fileType); err != nil {
