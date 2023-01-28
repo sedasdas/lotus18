@@ -621,7 +621,8 @@ func (m *Manager) FinalizeSector(ctx context.Context, sector storiface.SectorRef
 	log.Debugf("FinalizeSector: %d", sector.ID)
 
 	// get a selector for moving stuff into long-term storage
-	//fetchSel := newMoveSelector(m.index, sector.ID, storiface.FTCache|storiface.FTSealed, storiface.PathStorage, !m.disallowRemoteFinalize)
+	fetchSel := newMoveSelector(m.index, sector.ID, storiface.FTCache|storiface.FTSealed, storiface.PathStorage, !m.disallowRemoteFinalize)
+	log.Debugf("FinalizeSector: %d - fetchSel: %s", sector.ID, fetchSel)
 	// only move the unsealed file if it still exists and needs moving
 	//fs := newMoveSelector(m.index, sector.ID, storiface.FTUnsealed, storiface.PathStorage, !m.disallowRemoteFinalize)
 	fs := newExistingSelector(m.index, sector.ID, storiface.FTSealed|storiface.FTCache, false)
