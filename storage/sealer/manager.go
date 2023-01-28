@@ -623,8 +623,10 @@ func (m *Manager) FinalizeSector(ctx context.Context, sector storiface.SectorRef
 	// get a selector for moving stuff into long-term storage
 	//fetchSel := newMoveSelector(m.index, sector.ID, storiface.FTCache|storiface.FTSealed, storiface.PathStorage, !m.disallowRemoteFinalize)
 	// only move the unsealed file if it still exists and needs moving
+	//fs := newMoveSelector(m.index, sector.ID, storiface.FTUnsealed, storiface.PathStorage, !m.disallowRemoteFinalize)
 	fs := newExistingSelector(m.index, sector.ID, storiface.FTSealed|storiface.FTCache, false)
 	// move stuff to long-term storage
+
 	err := m.sched.Schedule(ctx, sector, sealtasks.TTFetch, fs,
 		m.schedFetch(sector, storiface.FTCache|storiface.FTSealed, storiface.PathStorage, storiface.AcquireMove),
 		func(ctx context.Context, w Worker) error {

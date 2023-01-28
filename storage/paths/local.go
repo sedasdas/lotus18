@@ -680,6 +680,7 @@ func (st *Local) removeSector(ctx context.Context, sid abi.SectorID, typ storifa
 }
 
 func (st *Local) MoveStorage(ctx context.Context, s storiface.SectorRef, types storiface.SectorFileType) error {
+
 	dest, destIds, err := st.AcquireSector(ctx, s, storiface.FTNone, types, storiface.PathStorage, storiface.AcquireMove)
 	if err != nil {
 		return xerrors.Errorf("acquire dest storage: %w", err)
@@ -714,7 +715,7 @@ func (st *Local) MoveStorage(ctx context.Context, s storiface.SectorRef, types s
 			log.Debugf("not moving %v(%d); source supports storage", s, fileType)
 			continue
 		}
-
+		st.removeSector(ctx, s.ID, types, sst.ID)
 		log.Debugf("moving %v(%d) to storage: %s(se:%t; st:%t) -> %s(se:%t; st:%t)", s, fileType, sst.ID, sst.CanSeal, sst.CanStore, dst.ID, dst.CanSeal, dst.CanStore)
 
 		if err := st.index.StorageDropSector(ctx, storiface.ID(storiface.PathByType(srcIds, fileType)), s.ID, fileType); err != nil {
