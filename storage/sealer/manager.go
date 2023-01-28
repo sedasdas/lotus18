@@ -618,9 +618,54 @@ func (m *Manager) SealCommit2(ctx context.Context, sector storiface.SectorRef, p
 func (m *Manager) FinalizeSector(ctx context.Context, sector storiface.SectorRef, keepUnsealed []storiface.Range) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-	log.Debugf("FinalizeSector: %d", sector.ID)
+	if err := m.index.StorageLock(ctx, sector.ID, storiface.FTNone, storiface.FTSealed|storiface.FTUnsealed|storiface.FTCache); err != nil {
+		return xerrors.Errorf("acquiring sector lock: %w", err)
+	}
 
-	// get a selector for moving stuff into long-term storage
+	// first check if the unsealed file exists anywhere; If it doesn't ignore it
+	unsealed := storiface.FTUnsealed
+	{
+		unsealedStores, err := m.index.StorageFindSector(ctx, sector.ID, storiface.FTUnsealed, 0, false)
+		if err != nil {
+			return xerrors.Errorf("finding unsealed sector: %w", err)
+		}
+
+		if len(unsealedStores) == 0 { // Is some edge-cases unsealed sector may not exist already, that's fine
+			unsealed = storiface.FTNone
+		}
+	}
+
+	// Make sure that the sealed file is still in sealing storage; In case it already
+	// isn't, we want to do finalize in long-term storage
+	pathType := storiface.PathStorage
+	{
+		sealedStores, err := m.index.StorageFindSector(ctx, sector.ID, storiface.FTSealed, 0, false)
+		if err != nil {
+			return xerrors.Errorf("finding sealed sector: %w", err)
+		}
+
+		for _, store := range sealedStores {
+			if store.CanSeal {
+				pathType = storiface.PathSealing
+				break
+			}
+		}
+	}
+
+	// do the cache trimming wherever the likely still very large cache lives.
+	// we really don't want to move it.
+	selector := newExistingSelector(m.index, sector.ID, storiface.FTCache, false)
+
+	err := m.sched.Schedule(ctx, sector, sealtasks.TTFinalize, selector,
+		m.schedFetch(sector, storiface.FTCache|unsealed, pathType, storiface.AcquireMove),
+		func(ctx context.Context, w Worker) error {
+			_, err := m.waitSimpleCall(ctx)(w.FinalizeSector(ctx, sector, keepUnsealed))
+			return err
+		})
+	if err != nil {
+		return err
+	}
+
 	fetchSel := newMoveSelector(m.index, sector.ID, storiface.FTCache|storiface.FTSealed, storiface.PathStorage, !m.disallowRemoteFinalize)
 	log.Debugf("FinalizeSector: %d - fetchSel: %s", sector.ID, fetchSel)
 	// only move the unsealed file if it still exists and needs moving
@@ -628,7 +673,7 @@ func (m *Manager) FinalizeSector(ctx context.Context, sector storiface.SectorRef
 	fs := newExistingSelector(m.index, sector.ID, storiface.FTSealed|storiface.FTCache, false)
 	// move stuff to long-term storage
 
-	err := m.sched.Schedule(ctx, sector, sealtasks.TTFetch, fs,
+	err = m.sched.Schedule(ctx, sector, sealtasks.TTFetch, fs,
 		m.schedFetch(sector, storiface.FTCache|storiface.FTSealed, storiface.PathStorage, storiface.AcquireMove),
 		func(ctx context.Context, w Worker) error {
 			_, err := m.waitSimpleCall(ctx)(w.MoveStorage(ctx, sector, storiface.FTCache|storiface.FTSealed))
