@@ -40,6 +40,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle, workers map[storiface.W
 	if worker.Info.Hostname != "miner" {
 		if _, ok := alls[workername]; !ok {
 			alls[workername] = &Tasks{Tasklist: make(map[string]string)}
+			log.Debugf("add new worker %s", workername)
 			log.Debugf("add new worker %s", alls[workername])
 		}
 
