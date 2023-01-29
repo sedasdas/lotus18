@@ -36,22 +36,22 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle, workers map[storiface.W
 	defer lck.Unlock()
 	if worker.Info.Hostname != "miner" {
 		if _, ok := alls[workername]; !ok {
-			alls[workername] = &Tasks{Tasklist: make(map[string]string)}
+			alls[workername+"p1"] = &Tasks{Tasklist: make(map[string]string)}
 			alls[workername+"p2"] = &Tasks{Tasklist: make(map[string]string)}
 			log.Debugf("add new worker %s", alls[workername])
 		}
 
-		if tasktype == "AP" && alls[workername].getTaskCountPc1("P1C") < 4 && alls[workername].getTaskCountPc1("AP") < 4 {
-			alls[workername].Tasklist[taskid] = tasktype
-			log.Debugf("add task ap for %s woker %s", taskid, workername)
+		if tasktype == "AP" && alls[workername+"p1"].getTaskCountPc1("P1C") < 4 && alls[workername].getTaskCountPc1("AP") < 4 {
+			alls[workername+"p1"].Tasklist[taskid] = tasktype
+			log.Debugf("add task ap for %s woker %s", taskid, workername+"p1")
 			return true
 		}
 
 		if _, ok := alls[workername].Tasklist[taskid]; ok {
 			if tasktype == "AP" {
-				if alls[workername].getTaskCountPc1("P1C") < 4 {
-					alls[workername].Tasklist[taskid] = tasktype
-					log.Debugf("update task ap for %s woker %s", taskid, workername)
+				if alls[workername+"p1"].getTaskCountPc1("P1C") < 4 {
+					alls[workername+"p1"].Tasklist[taskid] = tasktype
+					log.Debugf("update task ap for %s woker %s", taskid, workername+"p1")
 					return true
 				}
 			} else {
