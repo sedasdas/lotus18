@@ -3,6 +3,7 @@ package sealer
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/filecoin-project/lotus/storage/sealer/storiface"
 	"os"
 	"sync"
 )
@@ -26,7 +27,7 @@ func (t *Tasks) getTaskCountPc1(status string) int {
 
 var alls = make(map[string]*Tasks)
 
-func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
+func SchedMyn(task *WorkerRequest, worker *WorkerHandle, workers map[storiface.WorkerID]*WorkerHandle) bool {
 	taskid := task.Sector.ID.Number.String()
 	tasktype := task.TaskType.Short()
 	workername := worker.Info.Hostname
@@ -36,6 +37,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 	if worker.Info.Hostname != "miner" {
 		if _, ok := alls[workername]; !ok {
 			alls[workername] = &Tasks{Tasklist: make(map[string]string)}
+			alls[workername+"p2"] = &Tasks{Tasklist: make(map[string]string)}
 			log.Debugf("add new worker %s", alls[workername])
 		}
 
@@ -53,14 +55,23 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle) bool {
 					return true
 				}
 			} else {
-				alls[workername].Tasklist[taskid] = tasktype
-				log.Debugf("update task %s  id %s for  woker %s\"", tasktype, taskid, workername)
-				return true
-			}
-			log.Debugf(" %s woker is busy", workername)
-			return false
-		}
+				if workername == workername+"p2" {
+					for _, handle := range workers {
+						if handle.Info.Hostname == workername+"p2" {
+							alls[workername+"p2"].Tasklist[taskid] = tasktype
+							log.Debugf("update task %s for %s woker %s", tasktype, taskid, workername)
+							worker = handle
+							return true
 
+						}
+					}
+
+				}
+
+			}
+		}
+		log.Debugf(" %s woker is busy", workername)
+		return false
 	}
 
 	return false

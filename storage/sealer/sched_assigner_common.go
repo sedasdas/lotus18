@@ -71,7 +71,7 @@ func (a *AssignerCommon) TrySched(sh *Scheduler) {
 				if !windows[wnd].Allocated.CanHandleRequest(task.SealTask(), needRes, windowRequest.Worker, "schedAcceptable", worker.Info) {
 					continue
 				}
-				if task.TaskType != sealtasks.TTFetch && !SchedMyn(task, worker) {
+				if task.TaskType != sealtasks.TTFetch && !SchedMyn(task, worker, sh.Workers) {
 					continue
 				}
 
