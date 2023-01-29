@@ -64,7 +64,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle, workers map[storiface.W
 				return true
 			}
 		}
-		//log.Debugf(" %s woker is busy", workername)
+		//log.Debugf(" %s woker is busy", workernam e)
 		return false
 	}
 
