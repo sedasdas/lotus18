@@ -55,19 +55,15 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle, workers map[storiface.W
 					return true
 				}
 			} else {
-				if workername == workername+"p2" {
-					for _, handle := range workers {
-						if handle.Info.Hostname == workername+"p2" {
-							alls[workername+"p2"].Tasklist[taskid] = tasktype
-							log.Debugf("update task %s for %s woker %s", tasktype, taskid, workername)
-							worker = handle
-							return true
+				for _, handle := range workers {
+					if handle.Info.Hostname == workername+"p2" {
+						alls[workername+"p2"].Tasklist[taskid] = tasktype
+						log.Debugf("update task %s for %s woker %s", tasktype, taskid, handle.Info.Hostname)
+						worker = handle
+						return true
 
-						}
 					}
-
 				}
-
 			}
 		}
 		log.Debugf(" %s woker is busy", workername)
