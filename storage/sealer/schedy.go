@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/filecoin-project/lotus/storage/sealer/storiface"
 	"os"
+	"strings"
 	"sync"
 )
 
@@ -28,43 +29,38 @@ func (t *Tasks) getTaskCountPc1(status string) int {
 var alls = make(map[string]*Tasks)
 
 func SchedMyn(task *WorkerRequest, worker *WorkerHandle, workers map[storiface.WorkerID]*WorkerHandle) bool {
+	lck.Lock()
+	defer lck.Unlock()
 	taskid := task.Sector.ID.Number.String()
 	tasktype := task.TaskType.Short()
 	workername := worker.Info.Hostname
+	basename := workername[:len(workername)-2]
 	//log.Debugf(workername, taskid, tasktype)
-	lck.Lock()
-	defer lck.Unlock()
+
 	if worker.Info.Hostname != "miner" {
 		if _, ok := alls[workername]; !ok {
-			alls[workername+"p1"] = &Tasks{Tasklist: make(map[string]string)}
-			alls[workername+"p2"] = &Tasks{Tasklist: make(map[string]string)}
+			alls[workername] = &Tasks{Tasklist: make(map[string]string)}
 			log.Debugf("add new worker %s", alls[workername])
 		}
 
-		if tasktype == "AP" && alls[workername+"p1"].getTaskCountPc1("P1C") < 4 && alls[workername].getTaskCountPc1("AP") < 4 {
-			alls[workername+"p1"].Tasklist[taskid] = tasktype
-			log.Debugf("add task ap for %s woker %s", taskid, workername+"p1")
+		if strings.Contains(workername, "p1") && tasktype == "AP" && alls[workername].getTaskCountPc1("P1C") < 4 && alls[workername].getTaskCountPc1("AP") < 4 {
+			alls[workername].Tasklist[taskid] = tasktype
+			log.Debugf("add task ap for %s woker %s", taskid, workername)
 			return true
 		}
 
-		if _, ok := alls[workername].Tasklist[taskid]; ok {
-			if tasktype == "AP" {
-				if alls[workername+"p1"].getTaskCountPc1("P1C") < 4 {
-					alls[workername+"p1"].Tasklist[taskid] = tasktype
-					log.Debugf("update task ap for %s woker %s", taskid, workername+"p1")
+		if _, ok := alls[basename+"p1"].Tasklist[taskid]; ok {
+			if tasktype == "AP" || tasktype == "PC1" {
+				if strings.Contains(workername, "p1") && alls[workername].getTaskCountPc1("P1C") < 4 {
+					alls[workername].Tasklist[taskid] = tasktype
+					log.Debugf("update task ap or p1 for %s woker %s", taskid, workername)
 					return true
 				}
-			} else {
-				for _, handle := range workers {
-					log.Debugf("workername %s", handle.Info.Hostname)
-					if handle.Info.Hostname == workername+"p2" {
-						alls[workername+"p2"].Tasklist[taskid] = tasktype
-						log.Debugf("update task %s for %s woker %s", tasktype, taskid, handle.Info.Hostname)
-						worker = handle
-						return true
-
-					}
-				}
+			} else if strings.Contains(workername, "p2") {
+				//log.Debugf("workername %s", handle.Info.Hostname)
+				alls[workername].Tasklist[taskid] = tasktype
+				log.Debugf("update task %s for %s woker %s", tasktype, taskid, workername)
+				return true
 			}
 		}
 		log.Debugf(" %s woker is busy", workername)
