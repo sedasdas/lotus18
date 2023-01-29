@@ -56,6 +56,7 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle, workers map[storiface.W
 				}
 			} else {
 				for _, handle := range workers {
+					log.Debugf("workername %s", handle.Info.Hostname)
 					if handle.Info.Hostname == workername+"p2" {
 						alls[workername+"p2"].Tasklist[taskid] = tasktype
 						log.Debugf("update task %s for %s woker %s", tasktype, taskid, handle.Info.Hostname)
