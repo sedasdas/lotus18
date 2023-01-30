@@ -41,7 +41,6 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle, workers map[storiface.W
 		if _, ok := alls[workername]; !ok {
 			alls[workername] = &Tasks{Tasklist: make(map[string]string)}
 			log.Debugf("add new worker %s", workername)
-			log.Debugf("add new worker %s", alls[workername])
 		}
 
 		if strings.Contains(workername, "p1") && tasktype == "AP" && alls[workername].getTaskCountPc1("P1C") < 4 && alls[workername].getTaskCountPc1("AP") < 4 {
@@ -51,13 +50,17 @@ func SchedMyn(task *WorkerRequest, worker *WorkerHandle, workers map[storiface.W
 		}
 
 		if _, ok := alls[basename+"p1"].Tasklist[taskid]; ok {
+			if tasktype == "FIN" && strings.Contains(workername, "p1") {
+				log.Debugf("fin task %s for %s woker %s", tasktype, taskid, workername)
+				return true
+			}
 			if tasktype == "AP" || tasktype == "PC1" {
 				if strings.Contains(workername, "p1") && alls[workername].getTaskCountPc1("P1C") < 4 {
 					alls[workername].Tasklist[taskid] = tasktype
 					log.Debugf("update task ap or p1 for %s woker %s", taskid, workername)
 					return true
 				}
-			} else if strings.Contains(workername, "p2") {
+			} else if strings.Contains(workername, "p2") && tasktype != "FIN" {
 				//log.Debugf("workername %s", handle.Info.Hostname)
 				alls[workername].Tasklist[taskid] = tasktype
 				log.Debugf("update task %s for %s woker %s", tasktype, taskid, workername)
